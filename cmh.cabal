@@ -4,15 +4,15 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f6523fac98b872cc5047110959ae0e6641a1674da97614400a30b72d4f984f29
+-- hash: 266acac1c1e859c5a595730c50d66c307e7af8f98aa4c51a3845a868165342d9
 
-name:           functional-starter
+name:           cmh
 version:        0.1.0.0
 synopsis:       Functional Kitchen Sink
 description:    Please see the README on GitHub at <https://github.com/mudont/functional_starter#README>
 category:       Web
-homepage:       https://github.com/mudont/functional_starter#readme
-bug-reports:    https://github.com/mudont/functional_starter/issues
+homepage:       https://github.com/mudont/cmh#readme
+bug-reports:    https://github.com/mudont/cmh/issues
 author:         mudont
 maintainer:     maverickone@gmail.com
 copyright:      2021 mudont
@@ -24,7 +24,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/mudont/functional_starter
+  location: https://github.com/mudont/cmh
 
 library
   exposed-modules:
@@ -55,7 +55,7 @@ library
       Util.Crypto
       Util.Email
   other-modules:
-      Paths_functional_starter
+      Paths_cmh
   hs-source-dirs:
       src
   default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
@@ -158,7 +158,7 @@ executable client
   main-is: clientMain.hs
   other-modules:
       Main
-      Paths_functional_starter
+      Paths_cmh
   hs-source-dirs:
       app
   default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
@@ -179,6 +179,7 @@ executable client
     , case-insensitive
     , cereal
     , classy-prelude
+    , cmh
     , conduit
     , configurator
     , containers
@@ -192,7 +193,6 @@ executable client
     , exceptions
     , fast-logger
     , fastpbkdf2
-    , functional-starter
     , generic-lens
     , ghc-prim
     , hspec
@@ -262,7 +262,7 @@ executable client
 executable cmh
   main-is: Main.hs
   other-modules:
-      Paths_functional_starter
+      Paths_cmh
   hs-source-dirs:
       app
   default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
@@ -283,6 +283,7 @@ executable cmh
     , case-insensitive
     , cereal
     , classy-prelude
+    , cmh
     , conduit
     , configurator
     , containers
@@ -296,7 +297,6 @@ executable cmh
     , exceptions
     , fast-logger
     , fastpbkdf2
-    , functional-starter
     , generic-lens
     , ghc-prim
     , hspec
@@ -367,7 +367,7 @@ executable schema
   main-is: schema.hs
   other-modules:
       Main
-      Paths_functional_starter
+      Paths_cmh
   hs-source-dirs:
       app
   default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
@@ -388,6 +388,7 @@ executable schema
     , case-insensitive
     , cereal
     , classy-prelude
+    , cmh
     , conduit
     , configurator
     , containers
@@ -401,7 +402,6 @@ executable schema
     , exceptions
     , fast-logger
     , fastpbkdf2
-    , functional-starter
     , generic-lens
     , ghc-prim
     , hspec
@@ -468,11 +468,11 @@ executable schema
     , websockets
   default-language: Haskell2010
 
-test-suite functional-starter-test
+test-suite cmh-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_functional_starter
+      Paths_cmh
   hs-source-dirs:
       test
   default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
@@ -493,6 +493,7 @@ test-suite functional-starter-test
     , case-insensitive
     , cereal
     , classy-prelude
+    , cmh
     , conduit
     , configurator
     , containers
@@ -506,7 +507,6 @@ test-suite functional-starter-test
     , exceptions
     , fast-logger
     , fastpbkdf2
-    , functional-starter
     , generic-lens
     , ghc-prim
     , hspec

@@ -1,6 +1,6 @@
-name: functional-starter
+name: cmh
 version: 0.1.0.0
-github: "mudont/functional_starter"
+github: "mudont/cmh"
 license: BSD3
 author: "mudont"
 maintainer: "maverickone@gmail.com"
@@ -201,7 +201,7 @@ executables:
     ghc-options: -threaded -rtsopts -with-rtsopts=-N
     dependencies:
       - base >=4.7 && <5
-      - functional-starter
+      - cmh
 
   schema:
     source-dirs: app
@@ -209,7 +209,7 @@ executables:
     ghc-options: -threaded -rtsopts -with-rtsopts=-N
     dependencies:
       - base >=4.7 && <5
-      - functional-starter
+      - cmh
 
   client:
     source-dirs: app
@@ -217,15 +217,15 @@ executables:
     ghc-options: -threaded -rtsopts -with-rtsopts=-N
     dependencies:
       - base >=4.7 && <5
-      - functional-starter
+      - cmh
 tests:
-  functional-starter-test:
+  cmh-test:
     <<: *exe-defaults
     main: Spec.hs
     source-dirs:
       - test
     dependencies:
-      - functional-starter
+      - cmh
       - hspec
       - hspec-wai
       - hspec-wai-json
