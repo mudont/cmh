@@ -1,0 +1,28 @@
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+// Select the database to use.
+use('murali');
+
+db.quote.insertMany([
+  {'instrumentSymbol': 'IBM', 'price': 6.0}
+])
+db.quote.createIndex({"instrumentSymbol": 1}, {unique: true})
+
+
+[
+  [ op: "d", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120d68b4ac439b36a19402], ts: MongoStamp 6922611941047271426, t: 2, wall: 2021-01-28 01:09:54.719 UTC, v: 2],
+  [ op: "d", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120d68b4ac439b36a19403], ts: MongoStamp 6922611941047271427, t: 2, wall: 2021-01-28 01:09:54.719 UTC, v: 2],
+  [ op: "d", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120d68b4ac439b36a19404], ts: MongoStamp 6922611941047271428, t: 2, wall: 2021-01-28 01:09:54.719 UTC, v: 2],
+  [ op: "d", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120d68b4ac439b36a19405], ts: MongoStamp 6922611941047271429, t: 2, wall: 2021-01-28 01:09:54.719 UTC, v: 2],
+  [ op: "d", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120d68b4ac439b36a19406], ts: MongoStamp 6922611941047271430, t: 2, wall: 2021-01-28 01:09:54.719 UTC, v: 2],
+  [ op: "d", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120d68b4ac439b36a19407], ts: MongoStamp 6922611941047271431, t: 2, wall: 2021-01-28 01:09:54.719 UTC, v: 2],
+  [ op: "i", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120ee2b4ac439b36a1946d, instrumentSymbol: "IBM", price: 64.1056137084961], ts: MongoStamp 6922611941047271432, t: 2, wall: 2021-01-28 01:09:54.719 UTC, v: 2],
+  [ op: "i", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120ee2b4ac439b36a1946e, instrumentSymbol: "MSFT", price: 63.52510452270508], ts: MongoStamp 6922611941047271433, t: 2, wall: 2021-01-28 01:09:54.72 UTC, v: 2],
+  [ op: "i", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120ee2b4ac439b36a1946f, instrumentSymbol: "T", price: 63.23139572143555], ts: MongoStamp 6922611941047271434, t: 2, wall: 2021-01-28 01:09:54.72 UTC, v: 2],
+  [ op: "i", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120ee2b4ac439b36a19470, instrumentSymbol: "AMZN", price: 63.059539794921875], ts: MongoStamp 6922611941047271435, t: 2, wall: 2021-01-28 01:09:54.72 UTC, v: 2],
+  [ op: "i", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120ee2b4ac439b36a19471, instrumentSymbol: "WMT", price: 62.44370651245117], ts: MongoStamp 6922611941047271436, t: 2, wall: 2021-01-28 01:09:54.72 UTC, v: 2],
+  [ op: "i", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120ee2b4ac439b36a19472, instrumentSymbol: "CLZ4", price: 62.35490798950195], ts: MongoStamp 6922611941047271437, t: 2, wall: 2021-01-28 01:09:54.72 UTC, v: 2],
+  [ op: "i", ns: "murali.quote", ui: UUID "\145\DC1\234\DC1C7J\153\167\231\190V\169\221\156\193", o: [ _id: 60120ee2b4ac439b36a19473, instrumentSymbol: "GOOG", price: 662.3353271484375], ts: MongoStamp 6922611941047271438, t: 2, wall: 2021-01-28 01:09:54.72 UTC, v: 2]]

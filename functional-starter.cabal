@@ -1,0 +1,574 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: f6523fac98b872cc5047110959ae0e6641a1674da97614400a30b72d4f984f29
+
+name:           functional-starter
+version:        0.1.0.0
+synopsis:       Functional Kitchen Sink
+description:    Please see the README on GitHub at <https://github.com/mudont/functional_starter#README>
+category:       Web
+homepage:       https://github.com/mudont/functional_starter#readme
+bug-reports:    https://github.com/mudont/functional_starter/issues
+author:         mudont
+maintainer:     maverickone@gmail.com
+copyright:      2021 mudont
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/mudont/functional_starter
+
+library
+  exposed-modules:
+      API
+      API.AuthApi
+      API.RajniApi
+      API.TennisApi
+      API.WsApi
+      AppM
+      AppMain
+      Client
+      CmdArgs
+      Config
+      Const
+      DB.Opaleye.Database
+      DB.Opaleye.User
+      DB.Selda.CMModels
+      DB.Selda.Queries
+      DB.Models
+      Err
+      Handlers
+      Handlers.AuthHandler
+      Handlers.RajniHandler
+      Handlers.TennisHandler
+      Handlers.WsHandler
+      ServantWiring
+      Types
+      Util.Crypto
+      Util.Email
+  other-modules:
+      Paths_functional_starter
+  hs-source-dirs:
+      src
+  default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
+  build-depends:
+      Interpolation
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <=5.0
+    , base-compat
+    , base64
+    , base64-bytestring
+    , binary
+    , blaze-html
+    , blaze-markup
+    , bson
+    , bytestring
+    , case-insensitive
+    , cereal
+    , classy-prelude
+    , conduit
+    , configurator
+    , containers
+    , cprng-aes
+    , crypto-random
+    , cryptonite
+    , data-default
+    , data-has
+    , dhall
+    , directory
+    , exceptions
+    , fast-logger
+    , fastpbkdf2
+    , generic-lens
+    , ghc-prim
+    , hspec
+    , hspec-wai
+    , hspec-wai-json
+    , http-client
+    , http-client-tls
+    , http-types
+    , jose
+    , jose-jwt
+    , katip
+    , lens
+    , lens-aeson
+    , libiserv
+    , memory
+    , mime-mail
+    , mongoDB
+    , mtl
+    , natural-transformation
+    , network
+    , oidc-client
+    , opaleye
+    , optparse-applicative
+    , optparse-generic
+    , postgresql-simple
+    , product-profunctors
+    , profunctors
+    , protolude
+    , random
+    , raw-strings-qq
+    , relude
+    , resource-pool
+    , rio
+    , scientific
+    , selda
+    , selda-postgresql
+    , selda-sqlite
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-blaze
+    , servant-client
+    , servant-server
+    , servant-websockets
+    , smtp-mail
+    , split
+    , stm
+    , streamly
+    , string-conv
+    , string-interpolate
+    , text
+    , threads
+    , time
+    , transformers
+    , unordered-containers
+    , uuid
+    , vector
+    , wai
+    , wai-app-static
+    , wai-cors
+    , wai-extra
+    , wai-logger
+    , warp >=3.2
+    , websockets
+  default-language: Haskell2010
+
+executable client
+  main-is: clientMain.hs
+  other-modules:
+      Main
+      Paths_functional_starter
+  hs-source-dirs:
+      app
+  default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Interpolation
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , base-compat
+    , base64
+    , base64-bytestring
+    , binary
+    , blaze-html
+    , blaze-markup
+    , bson
+    , bytestring
+    , case-insensitive
+    , cereal
+    , classy-prelude
+    , conduit
+    , configurator
+    , containers
+    , cprng-aes
+    , crypto-random
+    , cryptonite
+    , data-default
+    , data-has
+    , dhall
+    , directory
+    , exceptions
+    , fast-logger
+    , fastpbkdf2
+    , functional-starter
+    , generic-lens
+    , ghc-prim
+    , hspec
+    , hspec-wai
+    , hspec-wai-json
+    , http-client
+    , http-client-tls
+    , http-types
+    , jose
+    , jose-jwt
+    , katip
+    , lens
+    , lens-aeson
+    , libiserv
+    , memory
+    , mime-mail
+    , mongoDB
+    , mtl
+    , natural-transformation
+    , network
+    , oidc-client
+    , opaleye
+    , optparse-applicative
+    , optparse-generic
+    , postgresql-simple
+    , product-profunctors
+    , profunctors
+    , protolude
+    , random
+    , raw-strings-qq
+    , relude
+    , resource-pool
+    , rio
+    , scientific
+    , selda
+    , selda-postgresql
+    , selda-sqlite
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-blaze
+    , servant-client
+    , servant-server
+    , servant-websockets
+    , smtp-mail
+    , split
+    , stm
+    , streamly
+    , string-conv
+    , string-interpolate
+    , text
+    , threads
+    , time
+    , transformers
+    , unordered-containers
+    , uuid
+    , vector
+    , wai
+    , wai-app-static
+    , wai-cors
+    , wai-extra
+    , wai-logger
+    , warp >=3.2
+    , websockets
+  default-language: Haskell2010
+
+executable cmh
+  main-is: Main.hs
+  other-modules:
+      Paths_functional_starter
+  hs-source-dirs:
+      app
+  default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Interpolation
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , base-compat
+    , base64
+    , base64-bytestring
+    , binary
+    , blaze-html
+    , blaze-markup
+    , bson
+    , bytestring
+    , case-insensitive
+    , cereal
+    , classy-prelude
+    , conduit
+    , configurator
+    , containers
+    , cprng-aes
+    , crypto-random
+    , cryptonite
+    , data-default
+    , data-has
+    , dhall
+    , directory
+    , exceptions
+    , fast-logger
+    , fastpbkdf2
+    , functional-starter
+    , generic-lens
+    , ghc-prim
+    , hspec
+    , hspec-wai
+    , hspec-wai-json
+    , http-client
+    , http-client-tls
+    , http-types
+    , jose
+    , jose-jwt
+    , katip
+    , lens
+    , lens-aeson
+    , libiserv
+    , memory
+    , mime-mail
+    , mongoDB
+    , mtl
+    , natural-transformation
+    , network
+    , oidc-client
+    , opaleye
+    , optparse-applicative
+    , optparse-generic
+    , postgresql-simple
+    , product-profunctors
+    , profunctors
+    , protolude
+    , random
+    , raw-strings-qq
+    , relude
+    , resource-pool
+    , rio
+    , scientific
+    , selda
+    , selda-postgresql
+    , selda-sqlite
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-blaze
+    , servant-client
+    , servant-server
+    , servant-websockets
+    , smtp-mail
+    , split
+    , stm
+    , streamly
+    , string-conv
+    , string-interpolate
+    , text
+    , threads
+    , time
+    , transformers
+    , unordered-containers
+    , uuid
+    , vector
+    , wai
+    , wai-app-static
+    , wai-cors
+    , wai-extra
+    , wai-logger
+    , warp >=3.2
+    , websockets
+  default-language: Haskell2010
+
+executable schema
+  main-is: schema.hs
+  other-modules:
+      Main
+      Paths_functional_starter
+  hs-source-dirs:
+      app
+  default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Interpolation
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , base-compat
+    , base64
+    , base64-bytestring
+    , binary
+    , blaze-html
+    , blaze-markup
+    , bson
+    , bytestring
+    , case-insensitive
+    , cereal
+    , classy-prelude
+    , conduit
+    , configurator
+    , containers
+    , cprng-aes
+    , crypto-random
+    , cryptonite
+    , data-default
+    , data-has
+    , dhall
+    , directory
+    , exceptions
+    , fast-logger
+    , fastpbkdf2
+    , functional-starter
+    , generic-lens
+    , ghc-prim
+    , hspec
+    , hspec-wai
+    , hspec-wai-json
+    , http-client
+    , http-client-tls
+    , http-types
+    , jose
+    , jose-jwt
+    , katip
+    , lens
+    , lens-aeson
+    , libiserv
+    , memory
+    , mime-mail
+    , mongoDB
+    , mtl
+    , natural-transformation
+    , network
+    , oidc-client
+    , opaleye
+    , optparse-applicative
+    , optparse-generic
+    , postgresql-simple
+    , product-profunctors
+    , profunctors
+    , protolude
+    , random
+    , raw-strings-qq
+    , relude
+    , resource-pool
+    , rio
+    , scientific
+    , selda
+    , selda-postgresql
+    , selda-sqlite
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-blaze
+    , servant-client
+    , servant-server
+    , servant-websockets
+    , smtp-mail
+    , split
+    , stm
+    , streamly
+    , string-conv
+    , string-interpolate
+    , text
+    , threads
+    , time
+    , transformers
+    , unordered-containers
+    , uuid
+    , vector
+    , wai
+    , wai-app-static
+    , wai-cors
+    , wai-extra
+    , wai-logger
+    , warp >=3.2
+    , websockets
+  default-language: Haskell2010
+
+test-suite functional-starter-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_functional_starter
+  hs-source-dirs:
+      test
+  default-extensions: ApplicativeDo BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DuplicateRecordFields EmptyCase ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns NoImplicitPrelude OverloadedLabels OverloadedLists OverloadedStrings PackageImports PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall
+  build-depends:
+      Interpolation
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <=5.0
+    , base-compat
+    , base64
+    , base64-bytestring
+    , binary
+    , blaze-html
+    , blaze-markup
+    , bson
+    , bytestring
+    , case-insensitive
+    , cereal
+    , classy-prelude
+    , conduit
+    , configurator
+    , containers
+    , cprng-aes
+    , crypto-random
+    , cryptonite
+    , data-default
+    , data-has
+    , dhall
+    , directory
+    , exceptions
+    , fast-logger
+    , fastpbkdf2
+    , functional-starter
+    , generic-lens
+    , ghc-prim
+    , hspec
+    , hspec-wai
+    , hspec-wai-json
+    , http-client
+    , http-client-tls
+    , http-types
+    , jose
+    , jose-jwt
+    , katip
+    , lens
+    , lens-aeson
+    , libiserv
+    , memory
+    , mime-mail
+    , mongoDB
+    , mtl
+    , natural-transformation
+    , network
+    , oidc-client
+    , opaleye
+    , optparse-applicative
+    , optparse-generic
+    , postgresql-simple
+    , product-profunctors
+    , profunctors
+    , protolude
+    , random
+    , raw-strings-qq
+    , relude
+    , resource-pool
+    , rio
+    , scientific
+    , selda
+    , selda-postgresql
+    , selda-sqlite
+    , servant
+    , servant-auth
+    , servant-auth-server
+    , servant-blaze
+    , servant-client
+    , servant-server
+    , servant-websockets
+    , smtp-mail
+    , split
+    , stm
+    , streamly
+    , string-conv
+    , string-interpolate
+    , text
+    , threads
+    , time
+    , transformers
+    , unordered-containers
+    , uuid
+    , vector
+    , wai
+    , wai-app-static
+    , wai-cors
+    , wai-extra
+    , wai-logger
+    , warp >=3.2
+    , websockets
+  default-language: Haskell2010

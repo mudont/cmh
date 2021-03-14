@@ -1,0 +1,5 @@
+.idea/
+config.dhall
+.stack-work/
+.vscode/
+nohup.out
