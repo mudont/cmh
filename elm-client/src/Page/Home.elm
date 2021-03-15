@@ -129,7 +129,7 @@ view model =
             [ -- viewBanner,
               div [ class "container page" ]
                 [ div [ class "row" ]
-                    [ div [ class "col-md-9" ] <|
+                    [ div [ class "col-md-12" ] <|
                     case model.tab of
                         PlayerTab -> viewPlayers model
                         EventTab -> viewEvents model
