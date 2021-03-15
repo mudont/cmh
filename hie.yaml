@@ -1,34 +1,22 @@
 cradle:
   stack:
     - path: "./src"
-      component: "functional-starter:lib"
+      component: "cmh:lib"
 
     - path: "./app/clientMain.hs"
-      component: "functional-starter:exe:client"
+      component: "cmh:exe:client"
 
     - path: "./app/Main.hs"
-      component: "functional-starter:exe:client"
+      component: "cmh:exe:client"
 
-    - path: "./app/Paths_functional_starter.hs"
-      component: "functional-starter:exe:client"
-
-    - path: "./app/Main.hs"
-      component: "functional-starter:exe:cmhackersd"
-
-    - path: "./app/Paths_functional_starter.hs"
-      component: "functional-starter:exe:cmhackersd"
-
-    - path: "./app/schema.hs"
-      component: "functional-starter:exe:schema"
+    - path: "./app/Paths_cmh.hs"
+      component: "cmh:exe:client"
 
     - path: "./app/Main.hs"
-      component: "functional-starter:exe:schema"
+      component: "cmh:exe:cmh"
 
-    - path: "./app/Paths_functional_starter.hs"
-      component: "functional-starter:exe:schema"
+    - path: "./app/Paths_cmh.hs"
+      component: "cmh:exe:cmh"
 
     - path: "./test"
-      component: "functional-starter:test:functional-starter-test"
-
-    - path: "./src"
-      component: "functional-starter:test:functional-starter-test"
+      component: "cmh:test:cmh-test"

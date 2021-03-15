@@ -3,22 +3,23 @@
 module AppMain where
 
 import           AppM
-import           ClassyPrelude                             (IO, IORef, Int,
-                                                            Monad ((>>=)),
-                                                            Semigroup ((<>)),
-                                                            Show (show), String,
-                                                            fromIntegral,
-                                                            liftIO, mapM_,
-                                                            newIORef, print,
-                                                            putStrLn, return,
-                                                            ($))
+import           Relude
+                            --  (IO, IORef, Int,
+                            --                                 Monad ((>>=)),
+                            --                                 Semigroup ((<>)),
+                            --                                 Show (show), String,
+                            --                                 fromIntegral,
+                            --                                 liftIO, mapM_,
+                            --                                 newIORef, print,
+                            --                                 putStrLn, return,
+                            --                                 ($))
 import           CmdArgs
 import           Config
 import           Crypto.Random.AESCtr
 import           Data.List.Split                           (startsWith)
 import qualified Data.Map                                  as M
-import           Data.Text                                 (isPrefixOf)
-import           Data.Text.Encoding
+--import           Data.Text                                 (isPrefixOf)
+--import           Data.Text.Encoding
 import           Database.Selda.PostgreSQL
 import           Network.HTTP.Client                       (newManager)
 import           Network.HTTP.Client.TLS                   (tlsManagerSettings)
@@ -44,7 +45,7 @@ initOIDC AppConfig {..} = do
   mgr <- newManager tlsManagerSettings
   prov <- O.discover "https://accounts.google.com" mgr
   let ru =
-        if "/" `isPrefixOf` redirectUri
+        if "/" `isPrefixOf` toS redirectUri
           then encodeUtf8 ("http://localhost:" <> toS (show port :: String) <> redirectUri)
           else toS redirectUri
   let clId = encodeUtf8 clientId
@@ -81,7 +82,7 @@ main = do
   oidcEnv <- initOIDC appCfg
   warpLogger <- jsonRequestLogger
   -- tstamp <- getCurrentTime
-  let jf = show $ jwkFile appCfg
+  let jf = toS $ jwkFile appCfg
   keyExists <- doesFileExist jf
   if keyExists then return () else SAS.writeKey jf
   myKey <- SAS.readKey jf

@@ -180,6 +180,10 @@ changeRouteTo maybeRoute model =
             Profile.init session username
                 |> updateWith (Profile username) GotProfileMsg model
 
+        Just (Route.EventRsvps eventId) -> (model, Cmd.none)
+            --EventRsvps.init session eventId
+            --    |> updateWith (EventRsvps eventId) GotEventRsvpsMsg model
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -220,9 +224,10 @@ update msg model =
         ( ChangedUrl url, _ ) ->
             let (m, cmd) = changeRouteTo (Route.fromUrl url) model
             in (m, Cmd.batch [cmd, Log.dbg <| "Url changed to " ++ Url.toString url])
+
         ( GotSettingsMsg subMsg, Settings settings ) ->
-            Settings.update subMsg settings
-                |> updateWith Settings GotSettingsMsg model
+            let (m, cmd) = Settings.update subMsg settings |> updateWith Settings GotSettingsMsg model
+            in (m, Cmd.batch [Log.dbg "DBG-- Settings msg", cmd])
 
         ( GotLoginMsg subMsg, Login login ) ->
             Login.update subMsg login
@@ -237,8 +242,8 @@ update msg model =
                 |> updateWith ResetPassword GotResetPasswordMsg model
 
         ( GotHomeMsg subMsg, Home home ) ->
-            Home.update subMsg home
-                |> updateWith Home GotHomeMsg model
+            let (m, cmd) = Home.update subMsg home |> updateWith Home GotHomeMsg model
+            in (m, Cmd.batch [Log.dbg "DBG-- Home msg", cmd])
 
         ( GotProfileMsg subMsg, Profile username profile ) ->
             Profile.update subMsg profile
@@ -252,7 +257,7 @@ update msg model =
 
         ( _, _ ) ->
             -- Disregard messages that arrived for the wrong page.
-            ( model, Cmd.none )
+            ( model, Cmd.batch [Log.dbg "DBG-- Unknown Home msg",Cmd.none] )
 
 
 updateWith : (subModel -> Model) -> (subMsg -> Msg) -> Model -> ( subModel, Cmd subMsg ) -> ( Model, Cmd Msg )

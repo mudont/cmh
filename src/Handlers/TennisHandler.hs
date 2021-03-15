@@ -8,7 +8,7 @@ import           Control.Monad.Except       (MonadIO (..))
 import           Control.Monad.Trans.Reader (asks)
 import qualified DB.Selda.CMModels          as CMM
 import qualified DB.Selda.Queries           as Query
-import           Database.Selda             (Query, Row, SqlRow,
+import           Database.Selda             (ID, Query, Row, SqlRow,
                                              SqlType (fromSql), def, fromId,
                                              query, toId, transaction,
                                              (:*:) ((:*:)))
@@ -88,20 +88,19 @@ player (SAS.Authenticated user) un = do
     _   -> notFound $ "No user " <> un
 player _ _ = forbidden " Pelase Login to see Contact info"
 
-eventRsvpInfoFromDb:: CMM.EventRsvp -> EventRsvpInfo
-eventRsvpInfoFromDb rsvp = EventRsvpInfo
+eventRsvpInfoFromDb:: Text -> CMM.EventRsvp -> EventRsvpInfo
+eventRsvpInfoFromDb un rsvp = EventRsvpInfo
   { eventId = fromId $ CMM.event_id (rsvp::CMM.EventRsvp)
-  -- TODO Should this be a username instead of player_id?
-  , playerId = fromId $ CMM.player_id (rsvp::CMM.EventRsvp)
+  , username = un
   , response = CMM.response (rsvp::CMM.EventRsvp)
   , comment = CMM.comment (rsvp::CMM.EventRsvp)
   }
 
-eventRsvpInfoToDb:: EventRsvpInfo -> CMM.EventRsvp
-eventRsvpInfoToDb rsvp = CMM.EventRsvp
+eventRsvpInfoToDb:: ID CMM.Player -> EventRsvpInfo -> CMM.EventRsvp
+eventRsvpInfoToDb playerId rsvp = CMM.EventRsvp
   { id = def
   , event_id = toId $ eventId (rsvp::EventRsvpInfo)
-  , player_id = toId $ playerId (rsvp::EventRsvpInfo)
+  , player_id = playerId
   , response = response (rsvp::EventRsvpInfo)
   , comment = comment (rsvp::EventRsvpInfo)
   }
@@ -159,13 +158,19 @@ updateEvent _ _ = forbidden " Pelase Login to update"
 eventRsvps :: SAS.AuthResult UserData -> Int -> AppM [EventRsvpInfo]
 eventRsvps (SAS.Authenticated user) eid = do
   conn <- asks dbConn
+  let uname = username (user :: UserData)
   dbRows <- liftIO $ runSeldaT (Query.getEventRsvps $ toId eid) conn
-  return $ map eventRsvpInfoFromDb dbRows
+  return $ map (eventRsvpInfoFromDb uname) dbRows
 
 eventRsvp :: SAS.AuthResult UserData -> EventRsvpInfo -> AppM ()
 eventRsvp (SAS.Authenticated user) er = do
-  conn <- asks dbConn
-  liftIO $ runSeldaT (Query.recordEventRsvp $ eventRsvpInfoToDb er) conn
+  let uname = username (user :: UserData)
+  ps <- dbQuery (Query.getPlayerByUsername uname)
+  case ps of
+    [p] -> do
+      conn <- asks dbConn
+      liftIO $ runSeldaT (Query.recordEventRsvp $ eventRsvpInfoToDb (CMM.id (p::CMM.Player)) er) conn
+    _ -> serverError "Didn't get exactly one player for user"
 
 updateProfile :: SAS.AuthResult UserData -> Text -> ContactInfo -> AppM ()
 updateProfile (SAS.Authenticated _user) uname ci = do

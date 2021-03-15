@@ -23,6 +23,7 @@ type Route
     | ResetPassword
     | Settings
     | Profile Username
+    | EventRsvps Int
 
 
 parser : Parser (Route -> a) a
@@ -98,3 +99,5 @@ routeToPieces page =
         Profile username ->
             [ "profile", Username.toString username ]
 
+        EventRsvps eventId ->
+            [ "event_rsvps", String.fromInt eventId]

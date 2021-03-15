@@ -18,7 +18,7 @@ import Task exposing (Task)
 import Time
 import Timestamp
 import Username exposing(..)
-
+import Bootstrap.Table as Table
 -- MODEL
 
 type Model = Model Internals
@@ -55,13 +55,21 @@ viewPlayers : Time.Zone -> Model -> List (Html Msg)
 viewPlayers timeZone (Model { players, session, errors }) =
     let
         playersHtml =
-            players
-                |> List.map (viewPreview)
+            Table.table
+                { options = [ Table.striped, Table.hover, Table.small ]
+                , thead =  Table.simpleThead
+                    [ Table.th [] [ text "Name" ]
+                    , Table.th [] [ text "Mobile" ]
+                    , Table.th [] [ text "Email" ]
+                    ]
+                , tbody =
+                    Table.tbody [] <| List.map (viewPreview) <| players
+                }
     in
-    Page.viewErrors ClickedDismissErrors errors :: playersHtml
+    Page.viewErrors ClickedDismissErrors errors :: [playersHtml]
 
 
-viewPreview : Player -> Html Msg
+viewPreview : Player -> Table.Row Msg
 viewPreview player =
     let
         name = player.firstName ++ " " ++ player.lastName
@@ -69,14 +77,13 @@ viewPreview player =
         mobile = player.mobilePhone
         username = player.username
     in
-    tr [ class "article-preview" ]
-        [ td [ class "article-meta" ]
+      Table.tr [  ]
+        [ Table.td []
             [ a [ Route.href (Route.Profile username) ]
-                [ text <| toString username ]
+                [ text name ]
             ]
-        ,  td [] [text name ]
-        ,  td [] [text email ]
-        ,  td [] [text mobile ]
+        ,  Table.td [] [text mobile ]
+        ,  Table.td [] [text email ]
         ]
 
 

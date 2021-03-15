@@ -263,7 +263,7 @@ instance FromJSON EventInfo
 
 data EventRsvpInfo = EventRsvpInfo {
   eventId  :: Int,
-  playerId   :: Int,
+  username :: Text,
   response :: Text,
   comment  :: Text
 } deriving (Eq, Show, Generic)

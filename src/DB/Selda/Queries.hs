@@ -1,6 +1,5 @@
 module DB.Selda.Queries where
 
-import           ClassyPrelude             hiding (group, id)
 import           DB.Selda.CMModels
 import qualified DB.Selda.CMModels         as CMM
 import           Data.Fixed                (HasResolution (resolution), Pico)
@@ -8,8 +7,10 @@ import           Data.String.Conv          (toS)
 import           Data.Time
 import           Database.Selda            hiding (Group)
 import           Database.Selda.Backend
+import           Database.Selda.Debug
 import           Database.Selda.Nullable
 import           Database.Selda.PostgreSQL (PG)
+import           Relude                    hiding (group, id)
 import           Types                     (ContactInfo (..), EventInfo (..))
 import           Util.Crypto               (genRandomBS, getRandTxt,
                                             makeDjangoPassword)
@@ -97,9 +98,14 @@ allPlayers = select player
 
 allUsersPlayers :: Query s (Row s User :*: Row s Player)
 allUsersPlayers = do
-  u <- select user
+
+  -- Restrict to users with non blank names
+  u <- select user `suchThat` (\u -> literal "" ./= (u ! #username) .||  literal "" ./=  (u ! #last_name))
+
   p <- select player
   restrict (u ! #id .== p ! #user_id)
+  order (u ! #first_name) ascending
+  order (u ! #last_name) ascending
   return (u :*: p)
 
 
@@ -196,27 +202,35 @@ getRelevantEvents username = do
   now <- liftIO getCurrentTime
   -- let (year, month, day) = toGregorian $ utctDay now
   -- let startOfYear = mkUTCTime (year, 1, 1) (0,0,0)
+  let (sql, params) = compile  $ myQuery now
+  liftIO $ print "-------- SQL join query -----------\n"
+  liftIO $ putStrLn $ toS sql
+  query $ myQuery now
+  where
+    myQuery ts = do
+      u <- select user `suchThat` (\u -> u ! #username .== literal username)
+      -- Get player row
+      p <- innerJoin (\p -> p ! #user_id .== u ! #id) (select player)
+      -- Get events
+      e <- select event `suchThat` (\e -> e ! #date .>= literal ts)
 
-  query $ do
-    -- Get player row
-    p <- getPlayerByUsername username
-    -- Get events
-    e <- select event `suchThat` (\e -> e ! #date .>= literal now)
-    -- Join eventrsvp to get this user's RSVP
-    mrsvp <- leftJoin (\er ->
-        er ! #event_id .== e ! #id .&&
-        er ! #player_id .== p ! #id
-      ) (select eventrsvp)
-    -- Left outer join registrations so we can filter irrelevant events
-    r <- leftJoin (\reg -> e ?! #league_id .== (reg ?! #league_id)) $
-          getRegistrationsByUsername username
-    -- Filter to get either global (no league_id set) events or
-    -- events for leagues to which this user is registered
-    restrict ( isNull (e ! #league_id ) .||
-                (e ?! #league_id .== (r ?! #league_id)))
-    --
-    order (e ! #date) ascending
-    return (e :*: mrsvp)
+      -- Join eventrsvp to get this user's RSVP
+      mrsvp <- leftJoin (\er ->
+          er ! #event_id .== e ! #id .&&
+          er ! #player_id .== p ! #id
+        ) (select eventrsvp)
+
+      -- Left outer join registrations so we can filter irrelevant events
+      r <- leftJoin (\reg -> e ?! #league_id .== (reg ?! #league_id)) $
+            getRegistrationsByUsername username
+      -- Filter to get either global (no league_id set) events or
+      -- events for leagues to which this user is registered
+      restrict ( isNull (e ! #league_id ) .||
+                  (e ?! #league_id .== (r ?! #league_id)))
+      --
+      order (e ! #date) ascending
+      return (e :*: mrsvp)
+
 
 insertEvent :: Event -> SeldaM s (ID Event)
 insertEvent evt = do
