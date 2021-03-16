@@ -83,7 +83,7 @@ viewHeader page maybeViewer =
                   []
             , text "CM Hackers"
             ]
-        , button [class "navbar-toggler navbar-light", type_ "button", attribute "data-trigger" "#main_nav"]
+        , button [class "navbar-toggler  navbar-light", type_ "button", attribute "data-trigger" "#main_nav"]
                 [ span [class "navbar-toggler-icon"] []
                 ]
         , div [class "navbar-collapse", id "main_nav"]
@@ -93,7 +93,8 @@ viewHeader page maybeViewer =
                 ]
             -- , ul [ class "nav navbar-nav pull-sm-right" ] <|
             , ul [ class "navbar-nav" ] <|
-                [navbarLink page Route.Home [ text "Home" ]]
+                [ navbarLink page Route.Home [ text "Home" ]
+                ]
             , ul [ class "navbar-nav ml-auto" ] <| viewMenu page maybeViewer
            ]
         ]
