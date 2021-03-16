@@ -69,7 +69,8 @@ view maybeViewer page { title, content } =
 -}
 viewHeader : Page -> Maybe Viewer -> Html msg
 viewHeader page maybeViewer =
-    nav [ class "navbar  navbar-expand-md navbar-light" ]
+    -- nav [ class "navbar  navbar-expand-md navbar-light" ]
+    nav [ class "navbar navbar-expand-lg " ]
         -- [ div [ class "container" ]
         [ a [ class "navbar-brand", Route.href Route.Home ]
             [ img
@@ -82,7 +83,7 @@ viewHeader page maybeViewer =
                   []
             , text "CM Hackers"
             ]
-        , button [class "navbar-toggler", type_ "button", attribute "data-trigger" "#main_nav"]
+        , button [class "navbar-toggler navbar-light", type_ "button", attribute "data-trigger" "#main_nav"]
                 [ span [class "navbar-toggler-icon"] []
                 ]
         , div [class "navbar-collapse", id "main_nav"]
@@ -92,11 +93,8 @@ viewHeader page maybeViewer =
                 ]
             -- , ul [ class "nav navbar-nav pull-sm-right" ] <|
             , ul [ class "navbar-nav" ] <|
-                navbarLink page Route.Home [ text "Home" ]
-                    :: viewMenu page maybeViewer
-            , ul [ class "navbar-nav ml-auto" ] <|
-                navbarLink page Route.Home [ text "Home" ]
-                    :: viewMenu page maybeViewer
+                [navbarLink page Route.Home [ text "Home" ]]
+            , ul [ class "navbar-nav ml-auto" ] <| viewMenu page maybeViewer
            ]
         ]
         --]

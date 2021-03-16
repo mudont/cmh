@@ -76,10 +76,11 @@ body.offcanvas-active{
     padding-left: 1rem;
     overflow-y: auto;
     visibility: hidden;
-    background-color: black;
+    background-color: lightgray;
     transition: visibility .2s ease-in-out, transform .2s ease-in-out;
   }
   .navbar-collapse.show {
+    z-index: 1000;
     visibility: visible;
     transform: translateX(-100%);
   }
