@@ -11,3 +11,7 @@
 .container {
   padding: 0;
 }
+.navbar-toggler-icon {
+    right: 15px;
+    position: absolute;
+}
