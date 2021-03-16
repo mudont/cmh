@@ -7,22 +7,18 @@ import Api exposing (Cred)
 import Api.Endpoint as Endpoint
 import Browser.Dom as Dom
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id, placeholder)
+import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode exposing (errorToString)
 import Loading
 import Log
-import Page
 import Session exposing (Session)
 import Task exposing (Task)
 import Time
-import Url.Builder
-import Username exposing (Username)
 import Tennis.Player as Player exposing(..)
 import Tennis.Event as Event exposing(..)
+import Tennis.Info as Info exposing(..)
 import Util exposing (httpErrorToString)
-
 
 -- MODEL
 
@@ -36,11 +32,13 @@ type alias Model =
     -- Loaded independently from server
     , players : Status Player.Model
     , events : Status Event.Model
+    , info : Status Info.Model
     }
 
 
 type HomeTab
-    = EventTab
+    = InfoTab
+    | EventTab
     | PlayerTab
     | MatchTab
 
@@ -58,13 +56,10 @@ init session =
     ( { session = session
       , timeZone = Time.utc
       , status = ""
-      , tab = case Session.cred session of
-                Just _ ->
-                    EventTab
-                Nothing ->
-                    PlayerTab
+      , tab = InfoTab
       , players = Loading
       , events = Loading
+      , info = Loading
       }
     , Cmd.batch
         [ fetchPlayers session PlayerTab CompletedPlayerLoad
@@ -81,14 +76,8 @@ viewPlayers: Model -> List (Html Msg)
 viewPlayers model =
     case model.players of
         Loaded players ->
-            [ div [ class "feed-toggle" ] <|
-                List.concat
-                    [ [ viewTabs (Session.cred model.session) model.tab
-                      ],
-                      Player.viewPlayers model.timeZone players
-                        |> List.map (Html.map GotPlayerMsg)
-                    ]
-            ]
+          Player.viewPlayers model.timeZone players
+            |> List.map (Html.map GotPlayerMsg)
         Loading ->
             []
 
@@ -98,20 +87,15 @@ viewPlayers model =
         Failed ->
             [ Loading.error  <| "players. " ++ model.status ]
 
+viewInfo: Model -> List (Html a)
+viewInfo model = Info.viewInfo model.timeZone
+
 viewEvents: Model -> List (Html Msg)
 viewEvents model =
     case model.events of
         Loaded events ->
-            [ div [ class "feed-toggle" ] <|
-                List.concat
-                    [ [ viewTabs (Session.cred model.session) model.tab
-                      ],
-
-                        Event.viewEvents model.timeZone events
-                        |> List.map (Html.map GotEventMsg)
-
-                    ]
-            ]
+            Event.viewEvents model.timeZone events
+            |> List.map (Html.map GotEventMsg)
         Loading ->
             []
 
@@ -130,11 +114,18 @@ view model =
               div [ class "container page" ]
                 [ div [ class "row" ]
                     [ div [ class "col-md-12" ] <|
-                    case model.tab of
-                        PlayerTab -> viewPlayers model
-                        EventTab -> viewEvents model
-                        MatchTab -> []
+                        [ div [ class "feed-toggle" ] <|
+                            List.concat
+                                [ [ viewTabs (Session.cred model.session) model.tab
+                                  ],
 
+                                    case model.tab of
+                                        InfoTab -> viewInfo model
+                                        PlayerTab -> viewPlayers model
+                                        EventTab -> viewEvents model
+                                        MatchTab -> []
+                                ]
+                        ]
                     ]
                 ]
             ]
@@ -155,6 +146,10 @@ viewBanner =
 
 
 
+infoTab : ( String, Msg )
+infoTab =
+    ( "Info", ClickedTab InfoTab )
+
 eventTab : ( String, Msg )
 eventTab =
     ( "Events", ClickedTab EventTab )
@@ -172,14 +167,27 @@ matchTab  =
 viewTabs : Maybe Cred -> HomeTab -> Html Msg
 viewTabs maybeCred tab =
     case tab of
+        InfoTab ->
+            arrangeTabs [] infoTab [ eventTab, playerTab , matchTab ]
         PlayerTab ->
-            Player.viewTabs [eventTab ] playerTab [ matchTab ]
-
+            arrangeTabs [infoTab, eventTab ] playerTab [ matchTab ]
         EventTab->
-            Event.viewTabs [] eventTab  [playerTab, matchTab ]
-
+            arrangeTabs [infoTab] eventTab  [playerTab, matchTab ]
         MatchTab ->
-            Player.viewTabs [eventTab , playerTab] matchTab []
+            arrangeTabs [infoTab, eventTab , playerTab] matchTab []
+
+arrangeTabs :
+    List ( String, msg )
+    -> ( String, msg )
+    -> List ( String, msg )
+    -> Html msg
+arrangeTabs before selected after =
+    ul [ class "nav nav-pills outline-active" ] <|
+        List.concat
+            [ List.map (viewTab []) before
+            , [ viewTab [ class "active" ] selected ]
+            , List.map (viewTab []) after
+            ]
 
 viewTab : List (Attribute msg) -> ( String, msg ) -> Html msg
 viewTab attrs ( name, msg ) =
@@ -307,8 +315,6 @@ fetchPlayers session feedTabs resToMsg =
                     Api.get Endpoint.players maybeCred decoder
     in
       req resToMsg
-    -- Cmd.map (Player.init session) (req msg)
-        -- |> Task.map (Player.init session)
 
 
 fetchEvents : Session -> HomeTab ->  (Result Http.Error (List Event) -> msg) -> Cmd msg

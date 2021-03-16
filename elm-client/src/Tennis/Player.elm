@@ -1,23 +1,20 @@
 module Tennis.Player exposing (
-    Model, Msg, decoder, init, update, viewPlayers,
-    viewTabs, Player)
+    Model, Msg, decoder, init, update, viewPlayers, Player)
 import Api exposing (Cred)
-import Avatar exposing (Avatar)
-import Bootstrap.Form.Input exposing (onInput, value)
+--import Css exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id, placeholder, src)
-import Html.Events exposing (onClick)
-import Http
+import Html.Attributes exposing (placeholder, value)
+--import Html.Styled exposing (..)
+--import Html.Styled.Attributes exposing (..)
+--import Html.Styled.Events exposing (..)
+import Html.Events exposing (onInput)
+import Html.Styled.Attributes exposing (css)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
--- import Json.Decode.Field as Field
 import Page
-import Profile
 import Route exposing (Route)
 import Session exposing (Session)
-import Task exposing (Task)
 import Time
-import Timestamp
 import Username exposing(..)
 import Bootstrap.Table as Table
 import Log
@@ -60,16 +57,16 @@ viewPlayers : Time.Zone -> Model -> List (Html Msg)
 viewPlayers timeZone (Model { players, session, search, errors }) =
     let
         playerText = \p -> p.firstName  ++ p.lastName ++ p.email ++ p.mobilePhone ++ (toString p.username)
-        fuzzyScore = \p -> (Fuzzy.match [] [] search (playerText p)).score
+        fuzzyScore = \p -> (Fuzzy.match [Fuzzy.addPenalty 0] [] search (playerText p)).score
         filteredPlayers =
           if search == ""
           then players
           else List.sortBy fuzzyScore players
 
         playersHtml =
-            [ Html.input [ placeholder "Fuzzy Search"
-                    , Html.Events.onInput SearchChanged
-                    , Html.Attributes.value search
+            [ input [ placeholder "Fuzzy Search"
+                    , onInput SearchChanged
+                    , value search
                     ] []
             , Table.table
                 { options = [ Table.striped, Table.hover, Table.small ]
@@ -103,68 +100,6 @@ viewPreview player =
         ,  Table.td [] [text email ]
         ]
 
-
-viewTabs :
-    List ( String, msg )
-    -> ( String, msg )
-    -> List ( String, msg )
-    -> Html msg
-viewTabs before selected after =
-    ul [ class "nav nav-pills outline-active" ] <|
-        List.concat
-            [ List.map (viewTab []) before
-            , [ viewTab [ class "active" ] selected ]
-            , List.map (viewTab []) after
-            ]
-
-
-viewTab : List (Attribute msg) -> ( String, msg ) -> Html msg
-viewTab attrs ( name, msg ) =
-    li [ class "nav-item" ]
-        [ -- Note: The RealWorld CSS requires an href to work properly.
-          a (class "nav-link" :: onClick msg :: href "#" :: attrs)
-            [ text name ]
-        ]
-
-
-viewPagination : (Int -> msg) -> Int -> Model -> Html msg
-viewPagination toMsg page (Model player) =
-    let
-        viewPageLink currentPage =
-            pageLink toMsg currentPage (currentPage == page)
-
-        totalPages = 1
-
-    in
-    if totalPages > 1 then
-        List.range 1 totalPages
-            |> List.map viewPageLink
-            |> ul [ class "pagination" ]
-
-    else
-        Html.text ""
-
-
-pageLink : (Int -> msg) -> Int -> Bool -> Html msg
-pageLink toMsg targetPage isActive =
-    li [ classList [ ( "page-item", True ), ( "active", isActive ) ] ]
-        [ a
-            [ class "page-link"
-            , onClick (toMsg targetPage)
-
-            -- The RealWorld CSS requires an href to work properly.
-            , href "#"
-            ]
-            [ text (String.fromInt targetPage) ]
-        ]
-
-
-viewTag : String -> Html msg
-viewTag tagName =
-    li [ class "tag-default tag-pill tag-outline" ] [ text tagName ]
-
-
-
 -- UPDATE
 
 
@@ -183,12 +118,6 @@ update maybeCred msg (Model model) =
 
 
 -- SERIALIZATION
-type Foo = Foo Username String
-fooDecoder : Decoder Foo
-fooDecoder =
-    Decode.succeed Foo
-        |> required "username" Username.decoder
-        |> required "firstName" Decode.string
 
 playerDecoder : Decoder Player
 playerDecoder =

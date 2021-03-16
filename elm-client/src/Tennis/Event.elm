@@ -1,29 +1,25 @@
 module Tennis.Event exposing (
     Model, Msg(..), decoder, init, update, viewEvents,
-    viewTabs, Event)
+    Event)
 import Api exposing (Cred, username)
-import Avatar exposing (Avatar)
 import Html exposing (..)
-import Html.Attributes exposing (attribute, class, classList, href, id, placeholder, src)
+import Html.Attributes exposing ( class)
 import Html.Events exposing (onClick)
 import Http
 import Iso8601
-import Json.Decode as Decode exposing (Decoder, maybe)
+import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (optional, required)
--- import Json.Decode.Field as Field
 import Json.Encode as Encode
 import Page
-import Profile
 import Route exposing (Route)
 import Session exposing (Session)
-import Task exposing (Task)
 import Time
-import Timestamp
 import Username exposing (toString)
 import Bootstrap.Table as Table
 import Log
 import Api.Endpoint as Endpoint
 import Util exposing (httpErrorToString)
+
 -- MODEL
 
 type Model = Model Internals
@@ -87,79 +83,19 @@ viewPreview event =
         ,  Table.td [] [text <| String.map (\c -> if c == 'T' then ' ' else c) <| String.slice 0 16 <| Iso8601.fromTime event.date ]
         ,  Table.td [] [rsvpHtml event.myRsvp ]
         , Table.td []
-          [ button [onClick <| Signup event.eventId "A"] [i [ class "ion-checkmark-circled" ] []]
+          [ button [onClick <| Signup event.eventId "A"] [rsvpHtml "A"]
           , text " "
-          , button [onClick <| Signup event.eventId "N"] [i [ class "ion-minus-circled" ] []]
+          , button [onClick <| Signup event.eventId "N"] [rsvpHtml "N"]
           ]
         ]
 
 rsvpHtml : String -> Html Msg
 rsvpHtml code =
     case code of
-        "A" -> i [ class "ion-checkmark-circled" ] []
+        -- https://iconify.design/
+        "A" -> i [ class "ion-checkmark-circled"] []
         "N" -> i [ class "ion-minus-circled" ] []
         _ -> text code
-
-viewTabs :
-    List ( String, msg )
-    -> ( String, msg )
-    -> List ( String, msg )
-    -> Html msg
-viewTabs before selected after =
-    ul [ class "nav nav-pills outline-active" ] <|
-        List.concat
-            [ List.map (viewTab []) before
-            , [ viewTab [ class "active" ] selected ]
-            , List.map (viewTab []) after
-            ]
-
-
-viewTab : List (Attribute msg) -> ( String, msg ) -> Html msg
-viewTab attrs ( name, msg ) =
-    li [ class "nav-item" ]
-        [ -- Note: The RealWorld CSS requires an href to work properly.
-          a (class "nav-link" :: onClick msg :: href "#" :: attrs)
-            [ text name ]
-        ]
-
-
-viewPagination : (Int -> msg) -> Int -> Model -> Html msg
-viewPagination toMsg page (Model event) =
-    let
-        viewPageLink currentPage =
-            pageLink toMsg currentPage (currentPage == page)
-
-        totalPages = 1
-
-    in
-    if totalPages > 1 then
-        List.range 1 totalPages
-            |> List.map viewPageLink
-            |> ul [ class "pagination" ]
-
-    else
-        Html.text ""
-
-
-pageLink : (Int -> msg) -> Int -> Bool -> Html msg
-pageLink toMsg targetPage isActive =
-    li [ classList [ ( "page-item", True ), ( "active", isActive ) ] ]
-        [ a
-            [ class "page-link"
-            , onClick (toMsg targetPage)
-
-            -- The RealWorld CSS requires an href to work properly.
-            , href "#"
-            ]
-            [ text (String.fromInt targetPage) ]
-        ]
-
-
-viewTag : String -> Html msg
-viewTag tagName =
-    li [ class "tag-default tag-pill tag-outline" ] [ text tagName ]
-
-
 
 -- UPDATE
 

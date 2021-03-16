@@ -107,8 +107,11 @@ allUsersPlayers = do
 
   p <- select player
   restrict (u ! #id .== p ! #user_id)
-  order (u ! #first_name) ascending
+
+  -- Order by first_name, then last_name.
+  -- Selda sorts by later one first.
   order (u ! #last_name) ascending
+  order (u ! #first_name) ascending
   return (u :*: p)
 
 

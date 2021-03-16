@@ -6,6 +6,7 @@
 - Email verification for users
 
 ## New features
+- Add a Info tab for general links
 - My Matches 
 - Score input
 - Standings
@@ -14,3 +15,6 @@
   - USTA matches. Why? how?
   - Capture opponent notes
 
+## Fancy features
+- Chat
+- Posts and Comments
