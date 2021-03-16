@@ -2,20 +2,6 @@ import './main.css';
 import { Elm } from './Main.elm';
 import * as serviceWorker from './serviceWorker';
 
-// Some Bootstrap Navbar related stuff
-// https://bootstrap-menu.com/detail-offcanvas-collapse.html
-$("[data-trigger]").on("click", function(){
-    var trigger_id =  $(this).attr('data-trigger');
-    $(trigger_id).toggleClass("show");
-    $('body').toggleClass("offcanvas-active");
-});
-
-// close button
-$(".btn-close").click(function(e){
-    $(".navbar-collapse").removeClass("show");
-    $("body").removeClass("offcanvas-active");
-});
-////////////////////////////////////
 
 console.log('DBG in JS startup')
 var storageKey = "store";

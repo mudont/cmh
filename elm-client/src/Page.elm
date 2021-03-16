@@ -87,13 +87,17 @@ viewHeader page maybeViewer =
                 ]
         , div [class "navbar-collapse", id "main_nav"]
             [ div [class "offcanvas-header mt-3"]
-                [ button [class "btn btn-outline-danger btn-close float-right"] [text "&times Close"]
+                [ button [class "btn btn-outline-danger btn-close float-right"] [text "\u{00D7} Close"]
                 , h5 [class "py-2 text-white"] [text "Main navbar"]
                 ]
-            , ul [ class "nav navbar-nav pull-sm-right" ] <|
+            -- , ul [ class "nav navbar-nav pull-sm-right" ] <|
+            , ul [ class "navbar-nav" ] <|
                 navbarLink page Route.Home [ text "Home" ]
                     :: viewMenu page maybeViewer
-                ]
+            , ul [ class "navbar-nav ml-auto" ] <|
+                navbarLink page Route.Home [ text "Home" ]
+                    :: viewMenu page maybeViewer
+           ]
         ]
         --]
 
