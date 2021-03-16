@@ -4,8 +4,8 @@ import Api exposing (Cred)
 import Asset exposing (src)
 import Avatar
 import Browser exposing (Document)
-import Html exposing (Html, a, button, div, footer, i, img, li, nav, p, span, text, ul)
-import Html.Attributes exposing (class, classList, href, style)
+import Html exposing (Html, a, button, div, footer, h5, i, img, li, nav, p, span, text, ul)
+import Html.Attributes exposing (attribute, class, classList, href, id, style, type_)
 import Html.Events exposing (onClick)
 import Profile
 import Route exposing (Route)
@@ -46,27 +46,56 @@ view maybeViewer page { title, content } =
     , body = viewHeader page maybeViewer :: content :: [ viewFooter ]
     }
 
+{-
+//https://bootstrap-menu.com/detail-offcanvas-collapse.html
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-trigger="#main_nav">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
+  <div class="navbar-collapse" id="main_nav">
+    <div class="offcanvas-header mt-3">
+      <button class="btn btn-outline-danger btn-close float-right"> &times Close </button>
+      <h5 class="py-2 text-white">Main navbar</h5>
+    </div>
+    <ul class="navbar-nav">
+      <li class="nav-item active"> <a class="nav-link" href="#">Home </a> </li>
+      <li class="nav-item"><a class="nav-link" href="#"> About </a></li>
+      <li class="nav-item"><a class="nav-link" href="#"> Services </a></li>
+    </ul>
+  </div> <!-- navbar-collapse.// -->
+</nav>
+-}
 viewHeader : Page -> Maybe Viewer -> Html msg
 viewHeader page maybeViewer =
     nav [ class "navbar  navbar-expand-md navbar-light" ]
-        [ div [ class "container" ]
-            [ a [ class "navbar-brand", Route.href Route.Home ]
-                [ img
-                      [ src Asset.hackersLogo
-                      , class "d-inline-block align-top"
+        -- [ div [ class "container" ]
+        [ a [ class "navbar-brand", Route.href Route.Home ]
+            [ img
+                  [ src Asset.hackersLogo
+                  , class "d-inline-block align-top"
 
-                      -- , style "width" "30px"
-                      , style "margin-right" "10"
-                      ]
-                      []
-                , text "CM Hackers"
+                  -- , style "width" "30px"
+                  , style "margin-right" "10"
+                  ]
+                  []
+            , text "CM Hackers"
+            ]
+        , button [class "navbar-toggler", type_ "button", attribute "data-trigger" "#main_nav"]
+                [ span [class "navbar-toggler-icon"] []
+                ]
+        , div [class "navbar-collapse", id "main_nav"]
+            [ div [class "offcanvas-header mt-3"]
+                [ button [class "btn btn-outline-danger btn-close float-right"] [text "&times Close"]
+                , h5 [class "py-2 text-white"] [text "Main navbar"]
                 ]
             , ul [ class "nav navbar-nav pull-sm-right" ] <|
                 navbarLink page Route.Home [ text "Home" ]
                     :: viewMenu page maybeViewer
-            ]
+                ]
         ]
+        --]
 
 
 viewMenu : Page -> Maybe Viewer -> List (Html msg)

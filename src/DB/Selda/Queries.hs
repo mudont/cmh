@@ -209,8 +209,8 @@ getRelevantEvents username = do
   -- let (year, month, day) = toGregorian $ utctDay now
   -- let startOfYear = mkUTCTime (year, 1, 1) (0,0,0)
   let (sql, params) = compile  $ myQuery now
-  liftIO $ print "-------- SQL join query -----------\n"
-  liftIO $ putStrLn $ toS sql
+  -- liftIO $ print "-------- SQL join query -----------\n"
+  -- liftIO $ putStrLn $ toS sql
   query $ myQuery now
   where
     myQuery ts = do
