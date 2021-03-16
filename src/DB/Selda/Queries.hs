@@ -100,7 +100,10 @@ allUsersPlayers :: Query s (Row s User :*: Row s Player)
 allUsersPlayers = do
 
   -- Restrict to users with non blank names
-  u <- select user `suchThat` (\u -> literal "" ./= (u ! #username) .||  literal "" ./=  (u ! #last_name))
+  u <- select user `suchThat` (\u ->
+      (literal "" ./= (u ! #first_name) .||  literal "" ./=  (u ! #last_name))
+      .&& u ! #is_active .== literal True
+    )
 
   p <- select player
   restrict (u ! #id .== p ! #user_id)

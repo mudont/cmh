@@ -222,7 +222,7 @@ update msg model =
                         ( newPlayers, subCmd ) =
                             Player.update (Session.cred model.session) subMsg players
                     in
-                    ( { model | players = Loaded players }
+                    ( { model | players = Loaded newPlayers }
                     , Cmd.map GotPlayerMsg subCmd
                     )
 
@@ -251,7 +251,7 @@ update msg model =
                             ( newEvents, subCmd ) =
                                 Event.update (Session.cred model.session) subMsg events
                         in
-                        ( { model | events = Loaded events }
+                        ( { model | events = Loaded newEvents }
                         , Cmd.map GotEventMsg subCmd
                         )
 

@@ -3,6 +3,7 @@ module Tennis.Player exposing (
     viewTabs, Player)
 import Api exposing (Cred)
 import Avatar exposing (Avatar)
+import Bootstrap.Form.Input exposing (onInput, value)
 import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id, placeholder, src)
 import Html.Events exposing (onClick)
@@ -19,6 +20,8 @@ import Time
 import Timestamp
 import Username exposing(..)
 import Bootstrap.Table as Table
+import Log
+import Fuzzy
 -- MODEL
 
 type Model = Model Internals
@@ -35,6 +38,7 @@ type alias Player =
 type alias Internals =
     { session: Session
     , errors: List String
+    , search: String
     , players: List Player
     , isLoading: Bool
     }
@@ -45,6 +49,7 @@ init session players =
     Model
         { session = session
         , errors = []
+        , search = ""
         , players = players
         , isLoading = False
         }
@@ -52,10 +57,21 @@ init session players =
 -- VIEW
 
 viewPlayers : Time.Zone -> Model -> List (Html Msg)
-viewPlayers timeZone (Model { players, session, errors }) =
+viewPlayers timeZone (Model { players, session, search, errors }) =
     let
+        playerText = \p -> p.firstName  ++ p.lastName ++ p.email ++ p.mobilePhone ++ (toString p.username)
+        fuzzyScore = \p -> (Fuzzy.match [] [] search (playerText p)).score
+        filteredPlayers =
+          if search == ""
+          then players
+          else List.sortBy fuzzyScore players
+
         playersHtml =
-            Table.table
+            [ Html.input [ placeholder "Fuzzy Search"
+                    , Html.Events.onInput SearchChanged
+                    , Html.Attributes.value search
+                    ] []
+            , Table.table
                 { options = [ Table.striped, Table.hover, Table.small ]
                 , thead =  Table.simpleThead
                     [ Table.th [] [ text "Name" ]
@@ -63,10 +79,11 @@ viewPlayers timeZone (Model { players, session, errors }) =
                     , Table.th [] [ text "Email" ]
                     ]
                 , tbody =
-                    Table.tbody [] <| List.map (viewPreview) <| players
+                    Table.tbody [] <| List.map (viewPreview) <| filteredPlayers
                 }
+            ]
     in
-    Page.viewErrors ClickedDismissErrors errors :: [playersHtml]
+    Page.viewErrors ClickedDismissErrors errors :: playersHtml
 
 
 viewPreview : Player -> Table.Row Msg
@@ -153,6 +170,7 @@ viewTag tagName =
 
 type Msg
     = ClickedDismissErrors
+    | SearchChanged String
 
 
 update : Maybe Cred -> Msg -> Model -> ( Model, Cmd Msg )
@@ -160,6 +178,7 @@ update maybeCred msg (Model model) =
     case msg of
         ClickedDismissErrors ->
             ( Model { model | errors = [] }, Cmd.none )
+        SearchChanged srch -> (Model {model | search = srch}, Log.dbg <| "SeachChanged " ++ srch)
 
 
 
