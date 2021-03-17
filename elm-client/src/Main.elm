@@ -216,8 +216,8 @@ update msg model =
 
                 Browser.External href ->
                     ( model
-                    , Cmd.batch [ --Nav.load href
-                                 Log.dbg <| "Ext Link clicked: " ++ href
+                    , Cmd.batch [ Nav.load href
+                                , Log.dbg <| "Ext Link clicked: " ++ href
                                 ]
                     )
 
