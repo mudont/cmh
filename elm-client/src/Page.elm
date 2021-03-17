@@ -161,8 +161,8 @@ viewMenu page maybeViewer =
 
         Nothing ->
             [ linkTo Route.Login [ text "Sign in" ]
-            , linkTo Route.Register [ text "Sign up" ]
             , linkTo Route.ResetPassword [ text "Reset Password" ]
+            , linkTo Route.Register [ text "Sign up" ]
             ]
 
 

@@ -60,7 +60,7 @@ view model =
             [ div [ class "container page" ]
                 [ div [ class "row" ]
                     [ div [ class "col-md-6 offset-md-3 col-xs-12" ]
-                        [ h1 [ class "text-xs-center" ] [ text "Sign up" ]
+                        [ h1 [ class "text-xs-center" ] [ text "Reset Password" ]
                         , p [ class "text-xs-center" ]
                             [ a [ Route.href Route.Login ]
                                 [ text "Have an account?" ]
