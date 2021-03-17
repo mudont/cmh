@@ -77,6 +77,7 @@ viewHeader page maybeViewer =
             -- , ul [ class "nav navbar-nav pull-sm-right" ] <|
             , ul [ class "navbar-nav" ] <|
                 [ navbarLink page Route.Home [ text "Home" ]
+                , a [href "https://py.cmhackers.com"] [text "Old Site"]
                 ]
             , ul [ class "navbar-nav ml-auto" ] <| viewMenu page maybeViewer
            ]
