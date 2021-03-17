@@ -139,7 +139,7 @@ eventDecoder =
         |> required "date" Iso8601.decoder
         |> required "name" Decode.string
         |> required "eventType" Decode.string
-        |> required "comment" Decode.string
+        |> optional "comment" Decode.string ""
         |> required "alwaysShow" Decode.bool
         |> required "orgId" Decode.int
         |> optional "leagueId" Decode.int 0

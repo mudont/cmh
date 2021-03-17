@@ -251,7 +251,7 @@ data EventInfo = EventInfo {
   date       :: UTCTime,
   name       :: Text,
   eventType  :: Text,
-  comment    :: Text,
+  comment    :: Maybe Text,
   alwaysShow :: Bool,
   orgId :: Int,
   leagueId :: Maybe Int,

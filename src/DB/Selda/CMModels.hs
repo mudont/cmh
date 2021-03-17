@@ -144,7 +144,7 @@ data Event = Event
     name :: Text,
     org_id :: ID Org,
     event_type :: Text,
-    comment :: Text,
+    comment :: Maybe Text,
     always_show :: Bool,
     league_id :: Maybe (ID League)
   }
