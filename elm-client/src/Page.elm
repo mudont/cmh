@@ -12,7 +12,8 @@ import Route exposing (Route)
 import Session exposing (Session)
 import Username exposing (Username)
 import Viewer exposing (Viewer)
-
+--import Bootstrap.Grid as Grid
+--import Bootstrap.Navbar as Navbar
 
 {-| Determines which navbar link (if any) will be rendered as active.
 
@@ -48,24 +49,6 @@ view maybeViewer page { title, content } =
 
 {-
 //https://bootstrap-menu.com/detail-offcanvas-collapse.html
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand" href="#">Navbar</a>
-  <button class="navbar-toggler" type="button" data-trigger="#main_nav">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="navbar-collapse" id="main_nav">
-    <div class="offcanvas-header mt-3">
-      <button class="btn btn-outline-danger btn-close float-right"> &times Close </button>
-      <h5 class="py-2 text-white">Main navbar</h5>
-    </div>
-    <ul class="navbar-nav">
-      <li class="nav-item active"> <a class="nav-link" href="#">Home </a> </li>
-      <li class="nav-item"><a class="nav-link" href="#"> About </a></li>
-      <li class="nav-item"><a class="nav-link" href="#"> Services </a></li>
-    </ul>
-  </div> <!-- navbar-collapse.// -->
-</nav>
 -}
 viewHeader : Page -> Maybe Viewer -> Html msg
 viewHeader page maybeViewer =
@@ -99,7 +82,58 @@ viewHeader page maybeViewer =
            ]
         ]
         --]
-
+--
+--viewHeaderBs : Page -> Maybe Viewer -> Html msg
+--viewHeaderBs page maybeViewer =
+--  Grid.container [] -- Wrap in a container to center the navbar
+--    [ Navbar.config NavbarMsg
+--        |> Navbar.withAnimation
+--        |> Navbar.collapseMedium            -- Collapse menu at the medium breakpoint
+--        |> Navbar.info                      -- Customize coloring
+--        |> Navbar.brand                     -- Add logo to your brand with a little styling to align nicely
+--            [ href "#" ]
+--            [ img
+--                [ src "assets/images/elm-bootstrap.svg"
+--                , class "d-inline-block align-top"
+--                , style [ ( "width", "30px" ) ]
+--                ]
+--                []
+--            , text " Elm Bootstrap"
+--            ]
+--        |> Navbar.items
+--            [ Navbar.itemLink
+--                [ href "#" ] [ text "Item 1" ]
+--            , Navbar.dropdown              -- Adding dropdowns is pretty simple
+--                { id = "mydropdown"
+--                , toggle = Navbar.dropdownToggle [] [ text "My dropdown" ]
+--                , items =
+--                    [ Navbar.dropdownHeader [ text "Heading" ]
+--                    , Navbar.dropdownItem
+--                        [ href "#" ]
+--                        [ text "Drop item 1" ]
+--                    , Navbar.dropdownItem
+--                        [ href "#" ]
+--                        [ text "Drop item 2" ]
+--                    , Navbar.dropdownDivider
+--                    , Navbar.dropdownItem
+--                        [ href "#" ]
+--                        [ text "Drop item 3" ]
+--                    ]
+--                }
+--            ]
+--        |> Navbar.customItems
+--            [ Navbar.formItem []
+--                [ Input.text [ Input.attrs [placeholder "enter" ]]
+--                , Button.button
+--                    [ Button.success
+--                    , Button.attrs [ Spacing.ml2Sm]
+--                    ]
+--                    [ text "Search"]
+--                ]
+--            , Navbar.textItem [ Spacing.ml2Sm, class "muted" ] [ text "Text"]
+--            ]
+--        |> Navbar.view state.customState
+--    ]
 
 viewMenu : Page -> Maybe Viewer -> List (Html msg)
 viewMenu page maybeViewer =
