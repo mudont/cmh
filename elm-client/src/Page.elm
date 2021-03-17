@@ -53,7 +53,7 @@ view maybeViewer page { title, content } =
 viewHeader : Page -> Maybe Viewer -> Html msg
 viewHeader page maybeViewer =
     -- nav [ class "navbar  navbar-expand-md navbar-light" ]
-    nav [ class "navbar navbar-expand-lg " ]
+    nav [ class "navbar navbar-expand-md " ]
         -- [ div [ class "container" ]
         [ a [ class "navbar-brand", Route.href Route.Home ]
             [ img
