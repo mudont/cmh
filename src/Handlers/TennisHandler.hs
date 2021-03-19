@@ -25,6 +25,7 @@ import qualified Servant.Auth.Server        as SAS
 import           Servant.Server             ()
 import           Types                      (ContactInfo (..), EventInfo (..),
                                              EventRsvpInfo (..),
+                                             EventWithRsvps (..),
                                              UserData (email, username),
                                              getUserName, modUserName)
 import           Util.Crypto
@@ -88,22 +89,6 @@ player (SAS.Authenticated user) un = do
     _   -> notFound $ "No user " <> un
 player _ _ = forbidden " Pelase Login to see Contact info"
 
-eventRsvpInfoFromDb:: Text -> CMM.EventRsvp -> EventRsvpInfo
-eventRsvpInfoFromDb un rsvp = EventRsvpInfo
-  { eventId = fromId $ CMM.event_id (rsvp::CMM.EventRsvp)
-  , username = un
-  , response = CMM.response (rsvp::CMM.EventRsvp)
-  , comment = CMM.comment (rsvp::CMM.EventRsvp)
-  }
-
-eventRsvpInfoToDb:: ID CMM.Player -> EventRsvpInfo -> CMM.EventRsvp
-eventRsvpInfoToDb playerId rsvp = CMM.EventRsvp
-  { id = def
-  , event_id = toId $ eventId (rsvp::EventRsvpInfo)
-  , player_id = playerId
-  , response = response (rsvp::EventRsvpInfo)
-  , comment = comment (rsvp::EventRsvpInfo)
-  }
 
 
 eventFromDb :: CMM.Event :*: Maybe CMM.EventRsvp -> EventInfo
@@ -155,12 +140,41 @@ updateEvent (SAS.Authenticated user) event = do
 
 updateEvent _ _ = forbidden " Pelase Login to update"
 
-eventRsvps :: SAS.AuthResult UserData -> Int -> AppM [EventRsvpInfo]
+-- Event Rsvps
+
+eventRsvpInfoFromDb:: Text -> CMM.EventRsvp -> EventRsvpInfo
+eventRsvpInfoFromDb un rsvp = EventRsvpInfo
+  { eventId = fromId $ CMM.event_id (rsvp::CMM.EventRsvp)
+  , username = un
+  , response = CMM.response (rsvp::CMM.EventRsvp)
+  , comment = CMM.comment (rsvp::CMM.EventRsvp)
+  }
+
+
+eventRsvpInfoWithUserFromDb:: CMM.EventRsvp :*: Text-> EventRsvpInfo
+eventRsvpInfoWithUserFromDb (rsvp :*: un) = EventRsvpInfo
+  { eventId = fromId $ CMM.event_id (rsvp::CMM.EventRsvp)
+  , username = un
+  , response = CMM.response (rsvp::CMM.EventRsvp)
+  , comment = CMM.comment (rsvp::CMM.EventRsvp)
+  }
+
+eventRsvpInfoToDb:: ID CMM.Player -> EventRsvpInfo -> CMM.EventRsvp
+eventRsvpInfoToDb playerId rsvp = CMM.EventRsvp
+  { id = def
+  , event_id = toId $ eventId (rsvp::EventRsvpInfo)
+  , player_id = playerId
+  , response = response (rsvp::EventRsvpInfo)
+  , comment = comment (rsvp::EventRsvpInfo)
+  }
+eventRsvps :: SAS.AuthResult UserData -> Int -> AppM EventWithRsvps
 eventRsvps (SAS.Authenticated user) eid = do
   conn <- asks dbConn
   let uname = username (user :: UserData)
-  dbRows <- liftIO $ runSeldaT (Query.getEventRsvps $ toId eid) conn
-  return $ map (eventRsvpInfoFromDb uname) dbRows
+  dbRows <- liftIO $ runSeldaT (Query.getEventWithRsvps $ toId eid) conn
+  let eventInfo = eventFromDb (fst dbRows :*: Nothing)
+  let rsvps = map eventRsvpInfoWithUserFromDb (snd dbRows)
+  return EventWithRsvps { event = eventInfo, rsvps = rsvps}
 
 eventRsvp :: SAS.AuthResult UserData -> EventRsvpInfo -> AppM ()
 eventRsvp (SAS.Authenticated user) er = do

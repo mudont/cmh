@@ -1,15 +1,21 @@
 module DB.Selda.Queries where
 
+import           Control.Monad.Catch
+import           Control.Monad.Error
 import           DB.Selda.CMModels
 import qualified DB.Selda.CMModels         as CMM
 import           Data.Fixed                (HasResolution (resolution), Pico)
 import           Data.String.Conv          (toS)
+import qualified Data.Text                 as Text
 import           Data.Time
 import           Database.Selda            hiding (Group)
+import qualified Database.Selda            as Selda
 import           Database.Selda.Backend
 import           Database.Selda.Debug
 import           Database.Selda.Nullable
 import           Database.Selda.PostgreSQL (PG)
+import qualified Database.Selda.Unsafe     as SeldaUnsafe
+import qualified Err
 import           Relude                    hiding (group, id)
 import           Types                     (ContactInfo (..), EventInfo (..))
 import           Util.Crypto               (genRandomBS, getRandTxt,
@@ -45,10 +51,16 @@ getUser username = do
   restrict (u ! #username .== literal username)
   pure u
 
+-- Not sure if there is a better way to get around the type checker
+-- issues. This seems to work
+seldaMaybeTextToLower :: Col s (Maybe Text) -> Col s (Maybe Text)
+seldaMaybeTextToLower = SeldaUnsafe.fun "LOWER"
+
 getUserByEmail :: Text -> Query s (Row s User)
 getUserByEmail email = do
+  let lcEmail = Text.toLower email
   u <- select user
-  restrict (u ! #email .== literal (Just email))
+  restrict (seldaMaybeTextToLower ( u ! #email) .== literal (Just lcEmail))
   pure u
 
 insertResetTokenQ :: Text -> ID User -> SeldaM PG (ID ResetToken)
@@ -101,8 +113,7 @@ allUsersPlayers = do
 
   -- Restrict to users with non blank names
   u <- select user `suchThat` (\u ->
-      (literal "" ./= (u ! #first_name) .||  literal "" ./=  (u ! #last_name))
-      .&& u ! #is_active .== literal True
+      u ! #is_active .== literal True
     )
 
   p <- select player
@@ -193,14 +204,22 @@ getUserFromResetToken token = do
 
 -- EVENT
 
-getEventWithRsvps :: ID Event -> SeldaM s (Event, [EventRsvp ])
+getEventWithRsvps :: ID Event -> SeldaM s (Event, [EventRsvp :*: Text])
 getEventWithRsvps eid = do
-  [e] <- query $
+  le <- query $
     select event `suchThat` (\e -> e ! #id .== literal eid)
-
-  rsvps <- query $
-    select eventrsvp `suchThat` (\r -> r ! #event_id .== literal eid)
-  return (e, rsvps)
+  case le of
+    [] -> throwM $ DbError $ "Event " <> show eid <> " not found"
+    [e] -> do
+      subQueryRes <- query $ do
+        rsvps <- select eventrsvp `suchThat` (\r -> r ! #event_id .== literal eid)
+        p <- innerJoin (\p -> rsvps ! #player_id .== p ! #id) (select player)
+        u <- innerJoin (\u -> p ! #user_id .== u ! #id) (select user)
+        order (u ! #username) ascending
+        order (rsvps ! #response) ascending
+        return (rsvps :*: u ! #username)
+      return (e, subQueryRes)
+  -- throwM $ DbError "getEventWithRsvps should never reach this line"
 
 getRelevantEvents :: Text -> SeldaM s [Event :*: Maybe EventRsvp]
 getRelevantEvents username = do

@@ -30,6 +30,7 @@ import Url exposing (Url)
 import Username exposing (Username)
 import Viewer exposing (Viewer)
 import Log exposing (..)
+import Tennis.EventRsvps as EventRsvps
 
 type Model
     = Redirect Session
@@ -40,6 +41,7 @@ type Model
     | Register Register.Model
     | ResetPassword ResetPassword.Model
     | Profile Username Profile.Model
+    | EventRsvps EventRsvps.Model
 
 
 
@@ -90,6 +92,9 @@ view model =
         Register register ->
             viewPage Page.Other GotRegisterMsg (Register.view register)
 
+        EventRsvps eventRsvps ->
+            viewPage Page.Other GotEventRsvpsMsg (EventRsvps.view eventRsvps)
+
         ResetPassword reset ->
             viewPage Page.Other GotResetPasswordMsg (ResetPassword.view reset)
 
@@ -111,6 +116,7 @@ type Msg
     | GotResetPasswordMsg ResetPassword.Msg
     | GotProfileMsg Profile.Msg
     | GotSession Session
+    | GotEventRsvpsMsg EventRsvps.Msg
 
 
 toSession : Model -> Session
@@ -139,6 +145,9 @@ toSession page =
 
         Profile _ profile ->
             Profile.toSession profile
+
+        EventRsvps model ->
+            EventRsvps.toSession model
 
 changeRouteTo : Maybe Route -> Model -> ( Model, Cmd Msg )
 changeRouteTo maybeRoute model =
@@ -180,9 +189,9 @@ changeRouteTo maybeRoute model =
             Profile.init session username
                 |> updateWith (Profile username) GotProfileMsg model
 
-        Just (Route.EventRsvps eventId) -> (model, Cmd.none)
-            --EventRsvps.init session eventId
-            --    |> updateWith (EventRsvps eventId) GotEventRsvpsMsg model
+        Just (Route.EventRsvps eventId) ->
+            EventRsvps.init session eventId
+                |> updateWith (EventRsvps ) GotEventRsvpsMsg model
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -241,6 +250,10 @@ update msg model =
             ResetPassword.update subMsg reset
                 |> updateWith ResetPassword GotResetPasswordMsg model
 
+        ( GotEventRsvpsMsg subMsg, EventRsvps er ) ->
+            EventRsvps.update subMsg er
+                |> updateWith EventRsvps GotEventRsvpsMsg model
+
         ( GotHomeMsg subMsg, Home home ) ->
             let (m, cmd) = Home.update subMsg home |> updateWith Home GotHomeMsg model
             in (m, Cmd.batch [Log.dbg "DBG-- Home msg", cmd])
@@ -257,7 +270,7 @@ update msg model =
 
         ( _, _ ) ->
             -- Disregard messages that arrived for the wrong page.
-            ( model, Cmd.batch [Log.dbg "DBG-- Unknown Home msg",Cmd.none] )
+            ( model, Cmd.batch [Log.error "Err-- Unknown msg received by update() in Main.elm",Cmd.none] )
 
 
 updateWith : (subModel -> Model) -> (subMsg -> Msg) -> Model -> ( subModel, Cmd subMsg ) -> ( Model, Cmd Msg )
@@ -299,6 +312,9 @@ subscriptions model =
         Profile _ profile ->
             Sub.map GotProfileMsg (Profile.subscriptions profile)
 
+        EventRsvps m ->
+            Sub.map GotEventRsvpsMsg (EventRsvps.subscriptions m)
+
 
 -- MAIN
 
@@ -314,13 +330,3 @@ main =
         , view = view
         }
 
---main : Program Login.Model.Model Model Msg
---main =
---    Browser.document
---        { init = init
---        , update = upd
---        , subscriptions = subscriptions
---        , view = view
---        --, onUrlRequest = LinkClicked
---        --, onUrlChange = UrlChanged
---        }

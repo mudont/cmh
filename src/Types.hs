@@ -257,7 +257,6 @@ data EventInfo = EventInfo {
   leagueId :: Maybe Int,
   myRsvp     :: Maybe Text
 } deriving (Eq, Show, Generic)
-
 instance ToJSON EventInfo
 instance FromJSON EventInfo
 
@@ -267,9 +266,15 @@ data EventRsvpInfo = EventRsvpInfo {
   response :: Text,
   comment  :: Text
 } deriving (Eq, Show, Generic)
-
 instance ToJSON EventRsvpInfo
 instance FromJSON EventRsvpInfo
+
+data EventWithRsvps = EventWithRsvps {
+  event :: EventInfo,
+  rsvps :: [EventRsvpInfo]
+} deriving (Eq, Show, Generic)
+instance ToJSON EventWithRsvps
+instance FromJSON EventWithRsvps
 
 data MatchInfo = MatchInfo {
   matchId :: Maybe Int,

@@ -53,7 +53,7 @@ view maybeViewer page { title, content } =
 viewHeader : Page -> Maybe Viewer -> Html msg
 viewHeader page maybeViewer =
     -- nav [ class "navbar  navbar-expand-md navbar-light" ]
-    nav [ class "navbar navbar-expand-md " ]
+    nav [ class "navbar navbar-expand-lg " ]
         -- [ div [ class "container" ]
         [ a [ class "navbar-brand", Route.href Route.Home ]
             [ img
@@ -77,7 +77,9 @@ viewHeader page maybeViewer =
             -- , ul [ class "nav navbar-nav pull-sm-right" ] <|
             , ul [ class "navbar-nav" ] <|
                 [ navbarLink page Route.Home [ text "Home" ]
-                , a [href "https://py.cmhackers.com"] [text "Old Site"]
+                , li [ classList [ ( "nav-item", True ), ( "active", False ) ] ]
+                          [ a [ class "nav-link", href "https://py.cmhackers.com" ] [text "Old Site"] ]
+
                 ]
             , ul [ class "navbar-nav ml-auto" ] <| viewMenu page maybeViewer
            ]

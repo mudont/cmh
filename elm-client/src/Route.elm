@@ -36,6 +36,7 @@ parser =
         , Parser.map Profile (s "profile" </> Username.urlParser)
         , Parser.map Register (s "register")
         , Parser.map ResetPassword (s "reset_password")
+        , Parser.map EventRsvps (s "event_rsvps" </> Parser.int)
         ]
 
 

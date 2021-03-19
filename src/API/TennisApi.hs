@@ -21,7 +21,7 @@ type TennisApi auths =
   :<|> Auth auths UserData :> "event" :>
        ReqBody '[JSON] EventInfo :> Put '[JSON] ()
   :<|> Auth auths UserData :> "event_rsvps" :> Capture "event_id" Int :>
-      Get '[JSON] [EventRsvpInfo]
+      Get '[JSON] EventWithRsvps
   :<|> Auth auths UserData :> "event_rsvp" :>
        ReqBody '[JSON] EventRsvpInfo :> Post '[JSON] ()
 

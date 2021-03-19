@@ -247,7 +247,7 @@ update msg model =
         CompletedEventLoad (Ok es) ->
             let eventModel = Event.init model.session es
             in
-              ({model | events = Loaded eventModel}, Cmd.none) -- TODO Do somthing here, or rewrite
+              ({model | events = Loaded eventModel}, Cmd.none)
         GotEventMsg subMsg ->
             let addlCmd = case subMsg of
                         SignupCompleted (Ok _) -> fetchEvents model.session EventTab CompletedEventLoad

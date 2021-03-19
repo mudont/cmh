@@ -162,6 +162,8 @@ _exe-defs: &exe-defaults
     - -rtsopts
     - -with-rtsopts=-N
     - -Wall
+    - -fwrite-ide-info
+    - -hiedir=.hie
 
 library:
   source-dirs:
@@ -192,12 +194,12 @@ library:
     - Types
     - Util.Crypto
     - Util.Email
-
+  ghc-options: -fwrite-ide-info -hiedir=.hie
 executables:
   cmh:
     source-dirs: app
     main: Main.hs
-    ghc-options: -threaded -rtsopts -with-rtsopts=-N
+    ghc-options: -threaded -rtsopts -with-rtsopts=-N -fwrite-ide-info -hiedir=.hie
     dependencies:
       - base >=4.7 && <5
       - cmh
@@ -213,7 +215,7 @@ executables:
   client:
     source-dirs: app
     main: clientMain.hs
-    ghc-options: -threaded -rtsopts -with-rtsopts=-N
+    ghc-options: -threaded -rtsopts -with-rtsopts=-N -fwrite-ide-info -hiedir=.hie
     dependencies:
       - base >=4.7 && <5
       - cmh

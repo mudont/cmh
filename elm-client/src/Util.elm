@@ -1,5 +1,9 @@
 module Util exposing (..)
 import Http
+import Html exposing(..)
+import Html.Attributes exposing (..)
+import Iso8601
+import Time exposing (Posix)
 
 httpErrorToString : Http.Error -> String
 httpErrorToString error =
@@ -20,3 +24,20 @@ httpErrorToString error =
             "Unknown error " ++ String.fromInt code
         Http.BadBody errorMessage ->
             errorMessage
+
+
+rsvpHtml : String -> Html msg
+rsvpHtml code =
+    case code of
+        -- https://iconify.design/
+        "A" -> i [ class "ion-checkmark-circled"] []
+        "N" -> i [ class "ion-minus-circled" ] []
+        _ -> text code
+
+dateHhMm : Posix -> String
+dateHhMm ts = String.map
+                -- Replace the 'T' between date and time with a space
+                (\c -> if c == 'T' then ' ' else c) <|
+                -- ignore the part after minutes. We don't need that msuch precision
+                String.slice 0 16 <|
+                Iso8601.fromTime ts

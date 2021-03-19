@@ -64,9 +64,9 @@ viewInfo _ =
 
 teamsBlockContents : List (Block.Item msg)
 teamsBlockContents =
-    [ Block.titleH3 [] [ text "USTA Tennis Teams" ]
+    [ Block.text [] [ a [href "https://py.cmhackers.com"] [text "Old Site"] ]
+    , Block.titleH3 [] [ text "USTA Tennis Teams" ]
     , Block.text [] [ text "We are a Tennis club based in Central New Jersey." ]
-    , Block.text [] [ a [href "https://py.cmhackers.com"] [text "Old Site"] ]
     , Block.custom <|
         Table.table
         { options = [ Table.striped, Table.hover, Table.small ]
@@ -102,9 +102,7 @@ teamsBlockContents =
 contactBlockContents : List (Block.Item msg)
 contactBlockContents =
     [ Block.titleH3 [] [ text "Contact" ]
-    , Block.link [href "mailto:bbotsch3@gmail.com,sak0007@yahoo.com"] [text "Click here"]
-    , Block.text [] [ text "To email our captain" ]
-            -- [ListGroup.ul [ListGroup.li [] [text "click here"]]]
+    , Block.link [href "mailto:bbotsch3@gmail.com,sak0007@yahoo.com"] [text "Email our captain"]
     ]
 
 sampleBlockContents : List (Block.Item msg)

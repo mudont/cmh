@@ -18,7 +18,7 @@ import Username exposing (toString)
 import Bootstrap.Table as Table
 import Log
 import Api.Endpoint as Endpoint
-import Util exposing (httpErrorToString)
+import Util exposing (dateHhMm, httpErrorToString, rsvpHtml)
 
 -- MODEL
 
@@ -80,7 +80,7 @@ viewPreview event =
             [ a [ Route.href (Route.EventRsvps event.eventId) ]
                 [ text event.name ]
             ]
-        ,  Table.td [] [text <| String.map (\c -> if c == 'T' then ' ' else c) <| String.slice 0 16 <| Iso8601.fromTime event.date ]
+        ,  Table.td [] [text <| dateHhMm event.date ]
         ,  Table.td [] [rsvpHtml event.myRsvp ]
         , Table.td []
           [ button [onClick <| Signup event.eventId "A"] [rsvpHtml "A"]
@@ -88,14 +88,6 @@ viewPreview event =
           , button [onClick <| Signup event.eventId "N"] [rsvpHtml "N"]
           ]
         ]
-
-rsvpHtml : String -> Html Msg
-rsvpHtml code =
-    case code of
-        -- https://iconify.design/
-        "A" -> i [ class "ion-checkmark-circled"] []
-        "N" -> i [ class "ion-minus-circled" ] []
-        _ -> text code
 
 -- UPDATE
 
