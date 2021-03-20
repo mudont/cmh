@@ -90,6 +90,11 @@ player (SAS.Authenticated user) un = do
 player _ _ = forbidden " Pelase Login to see Contact info"
 
 
+getComment :: Maybe CMM.EventRsvp -> Maybe Text
+getComment mer =
+  case mer of
+    Nothing -> Nothing
+    Just er -> Just $ CMM.comment (er :: CMM.EventRsvp)
 
 eventFromDb :: CMM.Event :*: Maybe CMM.EventRsvp -> EventInfo
 eventFromDb (dbEvt :*: rsvp) =
@@ -102,6 +107,7 @@ eventFromDb (dbEvt :*: rsvp) =
             , orgId = fromId $ CMM.org_id (dbEvt:: CMM.Event)
             , leagueId = fromId <$> CMM.league_id (dbEvt:: CMM.Event)
             , myRsvp= CMM.response <$> rsvp
+            , myRsvpComment= getComment rsvp
             }
 
 eventToDb :: EventInfo -> CMM.Event

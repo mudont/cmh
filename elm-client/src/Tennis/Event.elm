@@ -2,9 +2,10 @@ module Tennis.Event exposing (
     Model, Msg(..), decoder, init, update, viewEvents,
     Event)
 import Api exposing (Cred, username)
+import Css exposing (width)
 import Html exposing (..)
-import Html.Attributes exposing ( class)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (class, colspan, placeholder, style, type_)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Iso8601
 import Json.Decode as Decode exposing (Decoder)
@@ -18,7 +19,7 @@ import Username exposing (toString)
 import Bootstrap.Table as Table
 import Log
 import Api.Endpoint as Endpoint
-import Util exposing (dateHhMm, httpErrorToString, rsvpHtml)
+import Util exposing (dateHhMm, httpErrorToString, iconMore, rsvpHtml)
 
 -- MODEL
 
@@ -28,12 +29,14 @@ type alias Event =
     { eventId : Int
     , date : Time.Posix
     , name : String
-    ,  eventType: String
-    ,  comment : String
-    ,  alwaysShow : Bool
-    ,  orgId : Int
-    ,  leagueId : Int
-    ,  myRsvp  :  String
+    , eventType: String
+    , comment : String
+    , alwaysShow : Bool
+    , orgId : Int
+    , leagueId : Int
+    , myRsvp  :  String
+    , editingRsvp : Bool
+    , rsvpComment : String
     }
 type alias Internals =
     { session: Session
@@ -59,43 +62,80 @@ viewEvents timeZone (Model { events, session, errors }) =
     let
         eventsHtml =
             Table.table
-                { options = [ Table.striped, Table.hover, Table.small ]
-                , thead =  Table.simpleThead
-                    [ Table.th [] [ text "Event" ]
-                    , Table.th [] [ text "Date" ]
-                    , Table.th [] [ text "Curr Rsvp" ]
-                    , Table.th [] [ text "Rsvp" ]
-                    ]
+                { options = [ Table.striped, Table.hover, Table.small, Table.responsiveMd ]
+                , thead =  Table.thead [] [Table.tr []
+                    [ Table.td [] [ text "Event" ]
+                    , Table.td [] [ text "Date" ]
+                    , Table.td [] [ text "Curr Rsvp" ]
+                    , Table.td [] [ text "Rsvp" ]
+                    ]]
                 , tbody =
-                    Table.tbody [] <| List.map (viewPreview) <| events
+                    Table.tbody [] <| List.concatMap (viewPreview) <| events
                 }
     in
     Page.viewErrors ClickedDismissErrors errors :: [eventsHtml]
 
 
-viewPreview : Event -> Table.Row Msg
+viewPreview : Event -> List (Table.Row Msg)
 viewPreview event =
-    Table.tr [  ]
+  Table.tr [  ]
         [ Table.td []
             [ a [ Route.href (Route.EventRsvps event.eventId) ]
                 [ text event.name ]
             ]
         ,  Table.td [] [text <| dateHhMm event.date ]
         ,  Table.td [] [rsvpHtml event.myRsvp ]
-        , Table.td []
-          [ button [onClick <| Signup event.eventId "A"] [rsvpHtml "A"]
-          , text " "
-          , button [onClick <| Signup event.eventId "N"] [rsvpHtml "N"]
-          ]
+        , viewRsvpActions event
         ]
+    :: viewRsvpDetailedEditor event
 
+viewRsvpActions : Event -> Table.Cell Msg
+viewRsvpActions event =
+
+    Table.td [] <|
+        if event.editingRsvp
+        then
+          -- Nothing here, because another row will follow with the action buttons
+          []
+        else
+          [ button [onClick <| Signup event.eventId "A" ""] [rsvpHtml "A"]
+          , text " "
+          , button [onClick <| Signup event.eventId "N" ""] [rsvpHtml "N"]
+          , text " "
+          , button [onClick <| EditingRsvp event.eventId] [iconMore]
+          ]
+
+viewRsvpDetailedEditor : Event -> List (Table.Row Msg)
+viewRsvpDetailedEditor event =
+    if event.editingRsvp then
+      [ Table.tr [  ]
+            [ Table.td [Table.cellAttr (colspan 3)]
+                [ input [ type_ "text"
+                        , placeholder "Comment"
+                        , style "width" "100%"
+                        , onInput (RsvpComment event.eventId)
+                        ] []
+                ]
+            , Table.td []
+              [ button [onClick <| Signup event.eventId "A" event.rsvpComment] [rsvpHtml "A"]
+              , text " "
+              , button [onClick <| Signup event.eventId "N" event.rsvpComment] [rsvpHtml "N"]
+              , text " "
+              , button [onClick <| Signup event.eventId "1" event.rsvpComment] [rsvpHtml "1"]
+              ]
+            ]
+      ]
+    else
+      []
 -- UPDATE
 
 
 type Msg
     = ClickedDismissErrors
-    | Signup Int String
+    | Signup Int String String
     | SignupCompleted (Result Http.Error Int)
+    | EditingRsvp Int
+    | RsvpComment Int String
 
 
 update : Maybe Cred -> Msg -> Model -> ( Model, Cmd Msg )
@@ -103,15 +143,15 @@ update maybeCred msg (Model model) =
     case msg of
         ClickedDismissErrors ->
             ( Model { model | errors = [] }, Cmd.none )
-        Signup eventId response ->
+        Signup eventId response comment->
           case maybeCred of
             Nothing -> (Model model, Log.dbg <| " Unauthorized Signup " ++ String.fromInt eventId ++ " " ++ response)
             Just cred ->
               (Model model, Cmd.batch
-              [ Log.dbg <| "Signup " ++ String.fromInt eventId ++ " " ++ response
+              [ Log.dbg <| "Signup " ++ String.fromInt eventId ++ " " ++ response ++ " / " ++ comment
               , Api.post (Endpoint.eventRsvp) maybeCred (Http.jsonBody <| Encode.object [ ("eventId", Encode.int eventId)
                               , ("response", Encode.string response)
-                              , ("comment", Encode.string "")
+                              , ("comment", Encode.string comment)
                               , ("username", Encode.string  <| toString <| username cred)
                               ]) (Decode.succeed 0) SignupCompleted
               ])
@@ -120,6 +160,18 @@ update maybeCred msg (Model model) =
                 Ok _ -> (Model model, Log.dbg "Signup OK")
                 Err err -> (Model model, Log.dbg <| httpErrorToString err)
 
+        EditingRsvp eventId ->( Model {model| events = List.map (setEditing eventId) model.events}
+                              , Log.dbg <| "Editing Rsvp Comment for " ++ String.fromInt eventId)
+        RsvpComment eventId comment ->
+            ( Model {model| events = List.map (setComment eventId comment) model.events}
+            , Cmd.none)
+
+setEditing : Int -> Event -> Event
+setEditing eventId event = {event|editingRsvp = event.eventId == eventId}
+
+setComment : Int -> String -> Event -> Event
+setComment eventId comment event = {event|rsvpComment =
+            if event.eventId == eventId then comment else event.rsvpComment}
 
 -- SERIALIZATION
 
@@ -136,6 +188,8 @@ eventDecoder =
         |> required "orgId" Decode.int
         |> optional "leagueId" Decode.int 0
         |> optional "myRsvp" Decode.string ""
+        |> optional "editingRsvp" (Decode.succeed False) False
+        |> optional "rsvpComment" (Decode.succeed "") ""
 
 decoder : Maybe Cred -> Int -> Decoder (List Event)
 decoder maybeCred resultsPerPage =

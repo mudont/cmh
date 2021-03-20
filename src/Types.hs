@@ -255,7 +255,8 @@ data EventInfo = EventInfo {
   alwaysShow :: Bool,
   orgId :: Int,
   leagueId :: Maybe Int,
-  myRsvp     :: Maybe Text
+  myRsvp     :: Maybe Text,
+  myRsvpComment :: Maybe Text
 } deriving (Eq, Show, Generic)
 instance ToJSON EventInfo
 instance FromJSON EventInfo

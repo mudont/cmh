@@ -65,8 +65,8 @@ viewInfo _ =
 teamsBlockContents : List (Block.Item msg)
 teamsBlockContents =
     [ Block.text [] [ a [href "https://py.cmhackers.com"] [text "Old Site"] ]
-    , Block.titleH3 [] [ text "USTA Tennis Teams" ]
     , Block.text [] [ text "We are a Tennis club based in Central New Jersey." ]
+    , Block.titleH3 [] [ text "USTA Tennis Teams" ]
     , Block.custom <|
         Table.table
         { options = [ Table.striped, Table.hover, Table.small ]

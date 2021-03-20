@@ -4,6 +4,10 @@ import Html exposing(..)
 import Html.Attributes exposing (..)
 import Iso8601
 import Time exposing (Posix)
+import Color
+import Material.Icons as Filled
+import Material.Icons.Outlined as Outlined
+import Material.Icons.Types exposing (Coloring(..))
 
 httpErrorToString : Http.Error -> String
 httpErrorToString error =
@@ -29,10 +33,13 @@ httpErrorToString error =
 rsvpHtml : String -> Html msg
 rsvpHtml code =
     case code of
-        -- https://iconify.design/
-        "A" -> i [ class "ion-checkmark-circled"] []
-        "N" -> i [ class "ion-minus-circled" ] []
+        "A" -> Filled.check_circle 32 (Color <| Color.green)
+        "N" -> Filled.not_interested 32 (Color <| Color.red)
+        "1" -> Filled.one_x_mobiledata 32 (Color <| Color.lightGreen)
         _ -> text code
+
+iconMore : Html ms
+iconMore = Filled.more_horiz 32 (Color <| Color.black)
 
 dateHhMm : Posix -> String
 dateHhMm ts = String.map

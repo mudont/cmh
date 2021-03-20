@@ -14,18 +14,19 @@ Production build
 elm-app build   
 ```
 
-### elm examples/fractal architecture notes
-import deps
-
-Update, View, Subscriptions ->
-    Messages
-    Model
-
-Model -> 
-    Messages
-Messages -> None
-
 ## Elm SPA notes
+
+### Architecture
+public/index.html
+  src/index.js
+    src/Main.elm 
+        main = Api.application Viewer.decoder
+            subscriptions model -> Msg
+            model, cmd = init 
+            view Model -> Msg
+            update Msg -> Model -> Model
+
+update
 
 Model:
 ```elm
