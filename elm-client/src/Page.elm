@@ -175,8 +175,8 @@ viewFooter =
             [ a [ class "logo-font", href "/" ] [ text "CM Hackers" ]
             , span [ class "attribution" ]
                 [ text "Web project "
-                , a [ href "https://thinkster.io" ] [ text "CM" ]
-                , text ". Code & design licensed under MIT."
+                , a [ href "https://github.com/mudont/cmh" ] [ text "CM" ]
+                , text ". Code & design licensed under BSD 3."
                 ]
             ]
         ]

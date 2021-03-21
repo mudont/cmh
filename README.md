@@ -1,9 +1,7 @@
-# Haskell beginner's playground
+# CM Hackers Tennis team Website
 
-This is a Playground for various functionality imlemented in Haskell, Elm (and maybe other functional languages like Purescript)
 
-Authentication, REST servers, websockets, Web SPA/PWA clients, Postgres, Mongo (with oplog tailing)
-## Pre-requistes
+## Installation Pre-requistes
 
 If you don't have these already, install:
 - [Stack](https://docs.haskellstack.org/en/stable/README/):\
