@@ -174,8 +174,7 @@ viewFooter =
         [ div [ class "container" ]
             [ a [ class "logo-font", href "/" ] [ text "CM Hackers" ]
             , span [ class "attribution" ]
-                [ text "Web project "
-                , a [ href "https://github.com/mudont/cmh" ] [ text "CM" ]
+                [ a [ href "https://github.com/mudont/cmh" ] [ text "Web project CMH" ]
                 , text ". Code & design licensed under BSD 3."
                 ]
             ]
