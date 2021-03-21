@@ -46,10 +46,6 @@ The JS code initializes the model from localStorage. it gets authenticated email
 access-token
 
 
-
-## [TODO](doc/TODO.md)
-
-
 ## Tech stack
 - Authentication: OpenId Connect Google
 - Communication : REST + Websockets
