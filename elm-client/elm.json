@@ -21,6 +21,7 @@
             "elm/url": "1.0.0",
             "elm-explorations/markdown": "1.0.0",
             "icidasset/elm-material-icons": "7.0.0",
+            "justinmimbs/date": "3.2.1",
             "mdgriffith/style-elements": "5.0.2",
             "rtfeldman/elm-css": "16.1.0",
             "rtfeldman/elm-iso8601-date-strings": "1.1.3",

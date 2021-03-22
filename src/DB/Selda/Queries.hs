@@ -17,7 +17,8 @@ import           Database.Selda.PostgreSQL (PG)
 import qualified Database.Selda.Unsafe     as SeldaUnsafe
 import qualified Err
 import           Relude                    hiding (group, id)
-import           Types                     (ContactInfo (..), EventInfo (..))
+import           Types                     (ContactInfo (..), EventInfo (..),
+                                            MatchInfo (..))
 import           Util.Crypto               (genRandomBS, getRandTxt,
                                             makeDjangoPassword)
 
@@ -25,7 +26,7 @@ import           Util.Crypto               (genRandomBS, getRandTxt,
 initDatabase :: SeldaM PG ()
 initDatabase  = do
   tryCreateTable org
-  tryCreateTable league
+  tryCreateTable CMM.league
   tryCreateTable user
   tryCreateTable group
   tryCreateTable player
@@ -41,6 +42,15 @@ mkUTCTime (year, mon, day) (hour, min, sec) =
   UTCTime
     (fromGregorian year mon day)
     (timeOfDayToTime (TimeOfDay hour min sec))
+
+getStartOfYear :: IO Day
+getStartOfYear = do
+  -- Get curr time we can query future events
+  now <- liftIO getCurrentTime
+  let (year, month, day) = toGregorian $ utctDay now
+  let startOfYear = mkUTCTime (year, 1, 1) (0,0,0)
+  return $ utctDay startOfYear
+
 
 --------------------
 -- QUERIES -
@@ -225,9 +235,7 @@ getRelevantEvents :: Text -> SeldaM s [Event :*: Maybe EventRsvp]
 getRelevantEvents username = do
   -- Get curr time we can query future events
   now <- liftIO getCurrentTime
-  -- let (year, month, day) = toGregorian $ utctDay now
-  -- let startOfYear = mkUTCTime (year, 1, 1) (0,0,0)
-  let (sql, params) = compile  $ myQuery now
+  -- let (sql, params) = compile  $ myQuery now
   -- liftIO $ print "-------- SQL join query -----------\n"
   -- liftIO $ putStrLn $ toS sql
   query $ myQuery now
@@ -292,7 +300,6 @@ recordEventRsvp er = transaction $ do
 
 -- REGISTRATION
 
-
 getRegistrationsByUsername :: Text -> Query s  (Row s Registration)
 getRegistrationsByUsername username = do
   (u :*: p) <- allUsersPlayers
@@ -300,3 +307,36 @@ getRegistrationsByUsername username = do
   r <- select registration
   restrict (r ! #player_id .== p ! #id)
   return r
+
+
+-- MATCH
+
+getMatches :: Text -> SeldaM s [ Match :*: Maybe Text :*: Maybe Text :*: Maybe Text :*: Maybe Text :*: Maybe Text]
+getMatches username = do
+  soy <- liftIO getStartOfYear
+  query $ do
+    p <- getPlayerByUsername username
+    m <- select match `suchThat` (\m1 -> m1 ! #date .>= literal soy)
+    restrict (
+        m ! #home_player1_id .== p ! #id .||
+        m ! #away_player1_id .== p ! #id .||
+        ifNull (literal $ toId 0) (m ! #home_player2_id) .== p ! #id .||
+        ifNull (literal $ toId 0) (m ! #away_player2_id) .== p ! #id
+      )
+    l <- leftJoin (
+        \l -> l ! #id .== m ! #league_id
+      ) $ select CMM.league
+    h1u :*: h1p <- leftJoin (
+       \(u :*: p) -> m ! #home_player1_id .== p ! #id
+      ) allUsersPlayers
+    h2u :*: h2p <- leftJoin (
+        \(u :*: p) -> ifNull (literal $ toId 0) (m ! #home_player2_id) .== p ! #id
+      ) allUsersPlayers
+    a1u :*: a1p <- leftJoin (
+        \(u :*: p) -> m ! #away_player1_id .== p ! #id
+      ) allUsersPlayers
+    a2u :*: a2p <- leftJoin (
+        \(u :*: p) -> ifNull (literal $ toId 0) (m ! #away_player2_id) .== p ! #id
+      ) allUsersPlayers
+    return  $ m :*: (l ? #abbrev ) :*: (h1u ? #username) :*: (h2u ? #username) :*: (a1u ? #username) :*: (a2u ? #username)
+

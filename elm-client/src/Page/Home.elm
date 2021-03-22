@@ -17,6 +17,7 @@ import Task exposing (Task)
 import Time
 import Tennis.Player as Player exposing(..)
 import Tennis.Event as Event exposing(..)
+import Tennis.Match as Match exposing(..)
 import Tennis.Info as Info exposing(..)
 import Util exposing (httpErrorToString)
 
@@ -32,6 +33,7 @@ type alias Model =
     -- Loaded independently from server
     , players : Status Player.Model
     , events : Status Event.Model
+    , matches : Status Match.Model
     , info : Status Info.Model
     }
 
@@ -59,11 +61,13 @@ init session =
       , tab = InfoTab
       , players = Loading
       , events = Loading
+      , matches = Loading
       , info = Loading
       }
     , Cmd.batch
         [ fetchPlayers session PlayerTab CompletedPlayerLoad
         , fetchEvents session EventTab CompletedEventLoad
+        , fetchMatches session MatchTab CompletedMatchLoad
         , Task.perform (\_ -> PassedSlowLoadThreshold) Loading.slowThreshold
         ]
     )
@@ -105,6 +109,21 @@ viewEvents model =
         Failed ->
             [ Loading.error <| "events. " ++ model.status]
 
+viewMatches: Model -> List (Html Msg)
+viewMatches model =
+    case model.matches of
+        Loaded matches ->
+            Match.viewMatches model.timeZone matches
+            |> List.map (Html.map GotMatchMsg)
+        Loading ->
+            []
+
+        LoadingSlowly ->
+            [ Loading.icon ]
+
+        Failed ->
+            [ Loading.error <| "matches. " ++ model.status]
+
 view : Model -> { title : String, content : Html Msg }
 view model =
     { title = "CM Hackers"
@@ -123,7 +142,7 @@ view model =
                                         InfoTab -> viewInfo model
                                         PlayerTab -> viewPlayers model
                                         EventTab -> viewEvents model
-                                        MatchTab -> []
+                                        MatchTab -> viewMatches model
                                 ]
                         ]
                     ]
@@ -208,7 +227,9 @@ type Msg
     | CompletedPlayerLoad (Result Http.Error (List Player.Player))
     | GotPlayerMsg Player.Msg
     | CompletedEventLoad (Result Http.Error (List Event.Event))
+    | CompletedMatchLoad (Result Http.Error (List Match.Match))
     | GotEventMsg Event.Msg
+    | GotMatchMsg Match.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -248,6 +269,11 @@ update msg model =
             let eventModel = Event.init model.session es
             in
               ({model | events = Loaded eventModel}, Cmd.none)
+        CompletedMatchLoad (Err err) -> ({model | status = httpErrorToString err, matches = Failed}, Cmd.none)
+        CompletedMatchLoad (Ok ms) ->
+            let matchModel = Match.init model.session ms
+            in
+              ({model | matches = Loaded matchModel}, Cmd.none)
         GotEventMsg subMsg ->
             let addlCmd = case subMsg of
                         SignupCompleted (Ok _) -> fetchEvents model.session EventTab CompletedEventLoad
@@ -272,6 +298,27 @@ update msg model =
                     Failed ->
                         ( model, Log.error  "Event msg Failed")
             in (m, Cmd.batch [addlCmd, cmd])
+        GotMatchMsg subMsg ->
+            let (m, cmd)  =
+                  case model.matches of
+                    Loaded matches ->
+                        let
+                            ( newMatches, subCmd ) =
+                                Match.update (Session.cred model.session) subMsg matches
+                        in
+                        ( { model | matches = Loaded newMatches }
+                        , Cmd.map GotMatchMsg subCmd
+                        )
+
+                    Loading ->
+                        ( model, Log.error "Match msg Loading")
+
+                    LoadingSlowly ->
+                        ( model, Log.error  "Match msg LoadingSlowly")
+
+                    Failed ->
+                        ( model, Log.error  "Match msg Failed")
+            in (m, cmd)
         GotSession sess ->
             ( { model | session = sess }, Log.dbg "DBG--- session changed" )
 
@@ -329,6 +376,21 @@ fetchEvents session feedTabs resToMsg =
 
         req =
                     Api.get Endpoint.events maybeCred decoder
+    in
+      req resToMsg
+
+fetchMatches : Session -> HomeTab ->  (Result Http.Error (List Match) -> msg) -> Cmd msg
+fetchMatches session feedTabs resToMsg =
+    let
+        maybeCred =
+            Session.cred session
+
+        decoder =
+            Match.decoder maybeCred 100
+
+
+        req =
+                    Api.get Endpoint.matches maybeCred decoder
     in
       req resToMsg
 

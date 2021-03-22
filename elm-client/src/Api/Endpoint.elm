@@ -1,6 +1,7 @@
 module Api.Endpoint exposing (Endpoint, follow, login, googleLogin, register,
                               resetPassword, profiles, request, profile, users,
-                              players, events, task, eventRsvp, eventRsvps)
+                              players, events, task, eventRsvp, eventRsvps,
+                              matches)
 
 import Http
 import Platform exposing (Task)
@@ -114,6 +115,9 @@ players = url ["players"] []
 
 events : Endpoint
 events = url ["events"] []
+
+matches : Endpoint
+matches = url ["matches"] []
 
 eventRsvp : Endpoint
 eventRsvp = url ["event_rsvp"] []

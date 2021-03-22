@@ -285,7 +285,7 @@ data MatchInfo = MatchInfo {
   homePlayer2 :: Text,
   awayPlayer1 :: Text,
   awayPlayer2 :: Text,
-  homeWon :: Bool,
+  homeWon :: Maybe Bool,
   score::Text,
   comment :: Text,
   roundNum :: Int,

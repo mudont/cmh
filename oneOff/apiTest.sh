@@ -11,12 +11,13 @@ echo
 echo Sleeping 0 secs
 sleep 0
 
+curl -X GET -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/matches |jq 
 # Get EventRsvps for Event
 #curl -X GET -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/event_rsvps/495 |jq -c '.[]'
 # Update My response for Event
 #curl -X POST http://localhost:8080/api/event_rsvp -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "{\"eventId\":495,\"playerId\":95,\"response\":\"A\",\"comment\":\"a comm\"}" |jq -r .token
 #Get EventRsvp again
-curl -X GET -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/event_rsvps/494 |jq 
+#curl -X GET -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/event_rsvps/494 |jq 
 #curl -X PUT http://localhost:8080/api/profile/murali  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "$PROFILE_DATA" |jq
 #curl -X GET -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/profile/murali |jq
 #curl -X GET -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/user/murali |jq -c '.[]'

@@ -183,17 +183,17 @@ $(deriveJSON defaultOptions ''EventRsvp)
 -- Match
 data Match = Match
   { id :: ID Match,
-    date :: UTCTime,
+    date :: Day,
     league_id :: ID League,
     home_player1_id :: ID Player,
-    home_player2_id :: ID Player,
+    home_player2_id :: Maybe (ID Player),
     away_player1_id :: ID Player,
-    away_player2_id :: ID Player,
-    home_won :: Bool,
-    score:: Text,
+    away_player2_id :: Maybe (ID Player),
+    home_won :: Maybe Bool,
+    score:: Maybe Text,
     comment:: Text,
-    round_num::Int,
-    match_num::Int
+    round_num:: Maybe Int,
+    match_num::Maybe Int
   }
   deriving (Show, Generic)
 

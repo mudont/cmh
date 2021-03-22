@@ -26,6 +26,7 @@ import           Servant.Server             ()
 import           Types                      (ContactInfo (..), EventInfo (..),
                                              EventRsvpInfo (..),
                                              EventWithRsvps (..),
+                                             MatchInfo (..),
                                              UserData (email, username),
                                              getUserName, modUserName)
 import           Util.Crypto
@@ -44,6 +45,7 @@ tennisHandler =
   :<|> updateEvent
   :<|> eventRsvps
   :<|> eventRsvp
+  :<|> getMatches
 
 
 -- Get data from database
@@ -129,6 +131,7 @@ events (SAS.Authenticated user) mevent = do
   events <- liftIO $ runSeldaT (Query.getRelevantEvents $ username (user::UserData)) conn
   return $ map eventFromDb events
 events _ _ = forbidden " Pelase Login to see Event info"
+
 
 insertEvent :: SAS.AuthResult UserData -> EventInfo -> AppM ()
 insertEvent (SAS.Authenticated user) event = do
@@ -273,6 +276,33 @@ createUser username pswd email = do
       pure $ Right u
     Just _ -> pure $ Left $ "User " <> username <> " exists"
 
+-- MATCH
+
+matchFromDb :: CMM.Match :*: Maybe Text :*: Maybe Text :*: Maybe Text :*: Maybe Text :*: Maybe Text -> MatchInfo
+matchFromDb (m :*: mleague :*: mh1un :*: mh2un :*: ma1un :*: ma2un) =
+  MatchInfo { matchId = Just $ fromId $ CMM.id (m::CMM.Match)
+            , date= CMM.date (m::CMM.Match)
+            , league= fromMaybe "" mleague
+            , homePlayer1= fromMaybe "" mh1un
+            , homePlayer2= fromMaybe "" mh2un
+            , awayPlayer1= fromMaybe "" ma1un
+            , awayPlayer2= fromMaybe "" ma2un
+            , homeWon= CMM.home_won (m::CMM.Match)
+            , score= fromMaybe "" $ CMM.score (m::CMM.Match)
+            , comment= CMM.comment (m::CMM.Match)
+            , roundNum= fromMaybe 0 $ CMM.round_num (m::CMM.Match)
+            , matchNum= fromMaybe 0 $ CMM.match_num (m::CMM.Match)
+            }
+
+getMatches :: SAS.AuthResult UserData -> Maybe Int -> AppM [MatchInfo]
+getMatches (SAS.Authenticated user) mmatch = do
+  conn <- asks dbConn
+  matches <- liftIO $ runSeldaT (Query.getMatches (username (user::UserData))) conn
+  return $ map matchFromDb matches
+getMatches _ _ = forbidden " Pelase Login to see Match info"
+
+
+-- Utility
 dbQuery :: SqlRow b => Query PG (Row PG b) -> AppM [b]
 dbQuery q = do
   conn <- asks dbConn
