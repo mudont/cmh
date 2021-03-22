@@ -104,7 +104,7 @@ viewPreview match =
                  Nothing -> ""
                  Just True -> "Home"
                  Just False -> "Away"
-  in Table.tr [ Table.rowAttr (onDoubleClick <| MatchClicked match.matchId)]
+  in Table.tr [ Table.rowAttr (onClick <| MatchClicked match.matchId)]
         [ Table.td []
             [ text <| String.fromInt match.matchId
             ]
@@ -133,7 +133,7 @@ viewUpdateMatch match =
                  Just False -> "Away"
   in
     Table.tr
-        [ Table.rowAttr (onDoubleClick <| MatchClicked match.matchId)]
+        [ Table.rowAttr (onClick <| MatchClicked match.matchId)]
         [ Table.td []
             [ text <| String.fromInt match.matchId
             ]
@@ -147,6 +147,7 @@ viewUpdateMatch match =
                             , style "width" "100%"
                             , value match.score
                             , onInput (MatchScore match.matchId)
+                            , onClick (MatchClicked -1)
                             , onBlur (SaveMatch match.matchId)
                             ] []]
         ,  Table.td [] [text match.comment ]
