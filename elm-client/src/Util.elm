@@ -24,8 +24,10 @@ httpErrorToString error =
             "Verify your information and try again"
         Http.BadStatus 403 ->
             "Please Login or Register"
+        Http.BadStatus 405 ->
+            "Http Method not allowed"
         Http.BadStatus code ->
-            "Unknown error " ++ String.fromInt code
+            "Unexpected Http error " ++ String.fromInt code
         Http.BadBody errorMessage ->
             errorMessage
 

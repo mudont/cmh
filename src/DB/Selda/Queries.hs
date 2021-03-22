@@ -1,7 +1,7 @@
 module DB.Selda.Queries where
 
 import           Control.Monad.Catch
-import           Control.Monad.Error
+import           Control.Monad.Except
 import           DB.Selda.CMModels
 import qualified DB.Selda.CMModels         as CMM
 import           Data.Fixed                (HasResolution (resolution), Pico)
@@ -339,4 +339,13 @@ getMatches username = do
         \(u :*: p) -> ifNull (literal $ toId 0) (m ! #away_player2_id) .== p ! #id
       ) allUsersPlayers
     return  $ m :*: (l ? #abbrev ) :*: (h1u ? #username) :*: (h2u ? #username) :*: (a1u ? #username) :*: (a2u ? #username)
+
+
+updateMatch :: Match -> SeldaM s ()
+updateMatch mtch = do
+  update_ match (\m -> m ! #id .== literal  (CMM.id (mtch::CMM.Match))) (
+    \e -> e `with` [
+          #score := literal (score (mtch::Match))
+      ]
+     )
 

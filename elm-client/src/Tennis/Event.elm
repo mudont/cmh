@@ -4,7 +4,7 @@ module Tennis.Event exposing (
 import Api exposing (Cred, username)
 import Css exposing (width)
 import Html exposing (..)
-import Html.Attributes exposing (class, colspan, placeholder, style, type_)
+import Html.Attributes exposing (class, colspan, placeholder, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Iso8601
@@ -112,6 +112,7 @@ viewRsvpDetailedEditor event =
             [ Table.td [Table.cellAttr (colspan 3)]
                 [ input [ type_ "text"
                         , placeholder "Comment"
+                        , value event.comment
                         , style "width" "100%"
                         , onInput (RsvpComment event.eventId)
                         ] []
@@ -158,7 +159,8 @@ update maybeCred msg (Model model) =
         SignupCompleted result ->
             case result of
                 Ok _ -> (Model model, Log.dbg "Signup OK")
-                Err err -> (Model model, Log.dbg <| httpErrorToString err)
+                Err err -> ( Model {model|errors = List.append model.errors [httpErrorToString err]}
+                           , Log.dbg <| httpErrorToString err)
 
         EditingRsvp eventId ->( Model {model| events = List.map (setEditing eventId) model.events}
                               , Log.dbg <| "Editing Rsvp Comment for " ++ String.fromInt eventId)

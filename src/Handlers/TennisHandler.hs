@@ -46,6 +46,7 @@ tennisHandler =
   :<|> eventRsvps
   :<|> eventRsvp
   :<|> getMatches
+  :<|> updateMatch
 
 
 -- Get data from database
@@ -294,6 +295,23 @@ matchFromDb (m :*: mleague :*: mh1un :*: mh2un :*: ma1un :*: ma2un) =
             , matchNum= fromMaybe 0 $ CMM.match_num (m::CMM.Match)
             }
 
+matchToDb :: MatchInfo -> CMM.Match
+matchToDb mi =
+  CMM.Match
+  { id = toId $ fromMaybe 0 $ Types.matchId (mi::MatchInfo)
+  , date = Types.date (mi::MatchInfo)
+  , league_id = toId 0
+  , home_player1_id = toId 0
+  , home_player2_id = Nothing -- toId 0
+  , away_player1_id = toId 0
+  , away_player2_id = Nothing -- toId 0
+  , home_won = Types.homeWon (mi::MatchInfo)
+  , score = Just $ Types.score (mi::MatchInfo)
+  , comment = Types.comment (mi::MatchInfo)
+  , round_num = Just $ Types.roundNum (mi::MatchInfo)
+  , match_num = Just $ Types.matchNum (mi::MatchInfo)
+
+  }
 getMatches :: SAS.AuthResult UserData -> Maybe Int -> AppM [MatchInfo]
 getMatches (SAS.Authenticated user) mmatch = do
   conn <- asks dbConn
@@ -301,6 +319,15 @@ getMatches (SAS.Authenticated user) mmatch = do
   return $ map matchFromDb matches
 getMatches _ _ = forbidden " Pelase Login to see Match info"
 
+
+updateMatch :: SAS.AuthResult UserData -> MatchInfo -> AppM ()
+updateMatch (SAS.Authenticated user) match = do
+  conn <- asks dbConn
+  -- invalid "Bad score"
+  eid <- liftIO $ runSeldaT (Query.updateMatch $ matchToDb match) conn
+  return ()
+
+updateMatch _ _ = forbidden " Pelase Login to update"
 
 -- Utility
 dbQuery :: SqlRow b => Query PG (Row PG b) -> AppM [b]

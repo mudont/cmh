@@ -1,13 +1,13 @@
 module Err where
 
-import ClassyPrelude
-import Control.Monad.Except
-import qualified Data.ByteString.Lazy as LBS
-import Protolude (ConvertText (toS))
-import Servant
-import Text.Blaze
-import Text.Blaze.Renderer.Pretty (renderMarkup)
-import Types
+import           ClassyPrelude
+import           Control.Monad.Except
+import qualified Data.ByteString.Lazy       as LBS
+import           Protolude                  (ConvertText (toS))
+import           Servant
+import           Text.Blaze
+import           Text.Blaze.Renderer.Pretty (renderMarkup)
+import           Types
 
 format :: ToMarkup a => a -> LBS.ByteString
 format err = fromString $ renderMarkup bsErr
@@ -53,3 +53,10 @@ serverError = throwError . serverErrorErr
 
 serverErrorErr :: Text -> ServerError
 serverErrorErr = appToErr err500
+
+validationErr :: Text -> ServerError
+validationErr = appToErr err400
+
+invalid :: (MonadError ServerError m) => Text -> m a
+invalid = throwError . validationErr
+
