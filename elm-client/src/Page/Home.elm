@@ -171,7 +171,7 @@ infoTab =
 
 eventTab : ( String, Msg )
 eventTab =
-    ( "Events", ClickedTab EventTab )
+    ( "My Events", ClickedTab EventTab )
 
 
 playerTab : ( String, Msg )
@@ -181,7 +181,7 @@ playerTab =
 
 matchTab : ( String, Msg )
 matchTab  =
-    ( "Matches" , ClickedTab (MatchTab) )
+    ( "My Matches" , ClickedTab (MatchTab) )
 
 viewTabs : Maybe Cred -> HomeTab -> Html Msg
 viewTabs maybeCred tab =
