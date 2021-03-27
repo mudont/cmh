@@ -4,7 +4,7 @@ module Tennis.Match exposing (
 import Api exposing (Cred, username)
 import Css exposing (width)
 import Html exposing (..)
-import Html.Attributes exposing (class, colspan, id, placeholder, style, type_, value)
+import Html.Attributes exposing (class, colspan, id, placeholder, selected, style, type_, value)
 import Html.Events exposing (onBlur, onClick, onDoubleClick, onInput)
 import Http
 import Iso8601
@@ -76,6 +76,7 @@ viewMatches timeZone (Model { matches, session, errors , clickedMatchId}) =
                     , Table.td [] [ text "Away" ]
                     , Table.td [] [ text "Winner" ]
                     , Table.td [] [ text "Score" ]
+                    , Table.td [] [ text "Comment" ]
                     , Table.td [] [ text "Round" ]
                     , Table.td [] [ text "Match#" ]
                     ]]
@@ -100,23 +101,27 @@ viewPreview match =
      away = if match.awayPlayer2 /= "" then
                 match.awayPlayer1 ++ " & " ++ match.awayPlayer2
             else match.awayPlayer1
-     winner = case match.homeWon of
-                 Nothing -> ""
-                 Just True -> "Home"
-                 Just False -> "Away"
+     (winner, homeColor, awayColor) = getWinnerAttrs home away match.homeWon
   in Table.tr [ Table.rowAttr (onClick <| MatchClicked match.matchId)]
         [ Table.td []
             [ text <| String.fromInt match.matchId
             ]
         ,  Table.td [] [text <| toIsoString match.date ]
-        ,  Table.td [] [text home ]
-        ,  Table.td [] [text away ]
-        ,  Table.td [] [text winner ]
+        ,  Table.td [Table.cellAttr <| style "color" homeColor] [text home ]
+        ,  Table.td [Table.cellAttr <| style "color" awayColor] [text away ]
+        ,  Table.td [] [text winner]
         ,  Table.td [] [text match.score ]
         ,  Table.td [] [text match.comment ]
         ,  Table.td [] [text <| String.fromInt match.roundNum ]
         ,  Table.td [] [text <| String.fromInt match.matchNum ]
         ]
+
+getWinnerAttrs : String -> String -> Maybe Bool -> (String, String, String)
+getWinnerAttrs home away homeWon =
+    case homeWon of
+      Nothing -> ("", "black", "black")
+      Just True -> (home, "green", "lightgray")
+      Just False -> (home, "lightgray", "green")
 
 viewUpdateMatch : Match -> Table.Row Msg
 viewUpdateMatch match =
@@ -127,10 +132,7 @@ viewUpdateMatch match =
      away = if match.awayPlayer2 /= "" then
                 match.awayPlayer1 ++ " & " ++ match.awayPlayer2
             else match.awayPlayer1
-     winner = case match.homeWon of
-                 Nothing -> ""
-                 Just True -> "Home"
-                 Just False -> "Away"
+     (winner, homeColor, awayColor) = getWinnerAttrs home away match.homeWon
   in
     Table.tr
         [ Table.rowAttr (onClick <| MatchClicked match.matchId)]
@@ -138,9 +140,17 @@ viewUpdateMatch match =
             [ text <| String.fromInt match.matchId
             ]
         ,  Table.td [] [text <| toIsoString match.date ]
-        ,  Table.td [] [text home ]
-        ,  Table.td [] [text away ]
-        ,  Table.td [] [text winner ]
+        ,  Table.td [Table.cellAttr <| style "color" homeColor] [text home ]
+        ,  Table.td [Table.cellAttr <| style "color" awayColor] [text away ]
+        ,  Table.td [] [select [ onInput <| WinnerSelected match.matchId
+                               , onClick (MatchClicked -1)
+                               , onBlur (SaveMatch match.matchId)
+                               ]
+                [ option [value "home", selected (home == winner) ] [text home]
+                , option [value "away", selected (away == winner) ] [text away]
+                , option [value "unknown", selected ("" == winner) ] [text "unknown"]
+                ]
+            ]
         ,  Table.td [] [input [ type_ "text"
                             , id "score-input"
                             , placeholder "Score"
@@ -161,6 +171,7 @@ viewUpdateMatch match =
 type Msg
     = ClickedDismissErrors
     | MatchClicked Int
+    | WinnerSelected Int String
     | MatchScore Int String
     | SaveMatch Int
     | SaveCompleted (Result Http.Error Int)
@@ -179,6 +190,11 @@ update maybeCred msg (Model model) =
                     else Just matchId
                 }
             , Cmd.none )
+        WinnerSelected matchId winner ->
+            ( Model
+                { model | matches = List.map (setWinner matchId winner) model.matches
+                }
+            , Cmd.none )
         MatchScore matchId score ->
             ( Model
                 { model | matches = List.map (setScore matchId score) model.matches
@@ -195,8 +211,9 @@ update maybeCred msg (Model model) =
                     [ Log.dbg <| "Match save " ++ String.fromInt matchId
                     , case mmatch of
                         Nothing -> Log.dbg <| "Tried to save invalid Match id " ++ String.fromInt matchId
-                        Just match -> Api.put (Endpoint.match (Just matchId)) cred (Http.jsonBody <|
-                            Encode.object [ ("matchId", Encode.int matchId)
+                        Just match -> Cmd.batch
+                          [ Api.put (Endpoint.match (Just matchId)) cred (Http.jsonBody <|
+                              Encode.object [ ("matchId", Encode.int matchId)
                                     , ("date", Encode.string <| Date.toIsoString match.date)
                                     , ("league", Encode.string match.league)
                                     , ("homePlayer1", Encode.string match.homePlayer1)
@@ -209,6 +226,12 @@ update maybeCred msg (Model model) =
                                     , ("roundNum", Encode.int match.roundNum)
                                     , ("matchNum", Encode.int match.matchNum)
                                     ]) (Decode.succeed 0) SaveCompleted
+                          , Log.dbg <| "Saving homeWon= " ++ (case match.homeWon of
+                                                                 Just True -> "T"
+                                                                 Just False -> "F"
+                                                                 _ -> "?"
+                                                             )
+                          ]
                     ]
                 )
         SaveCompleted result ->
@@ -222,6 +245,16 @@ setScore : Int -> String -> Match -> Match
 setScore matchId score match =
     if matchId == match.matchId
     then {match|score=score}
+    else match
+
+setWinner : Int -> String -> Match -> Match
+setWinner matchId winner match =
+    if matchId == match.matchId
+    then { match|homeWon = case winner of
+                "home" -> Just True
+                "away" -> Just False
+                _ -> Nothing
+         }
     else match
 
 -- SERIALIZATION

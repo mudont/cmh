@@ -346,6 +346,7 @@ updateMatch mtch = do
   update_ match (\m -> m ! #id .== literal  (CMM.id (mtch::CMM.Match))) (
     \e -> e `with` [
           #score := literal (score (mtch::Match))
+        , #home_won := literal (home_won (mtch::Match))
       ]
      )
 
