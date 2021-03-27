@@ -1,3 +1,3 @@
 #!/bin/bash
-nohup stack exec cmh > cmh.log&
+nohup stack exec cmh > cmh.log
 
