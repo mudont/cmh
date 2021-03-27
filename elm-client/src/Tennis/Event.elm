@@ -36,7 +36,7 @@ type alias Event =
     , leagueId : Int
     , myRsvp  :  String
     , editingRsvp : Bool
-    , rsvpComment : String
+    , myRsvpComment : String
     }
 type alias Internals =
     { session: Session
@@ -112,17 +112,17 @@ viewRsvpDetailedEditor event =
             [ Table.td [Table.cellAttr (colspan 3)]
                 [ input [ type_ "text"
                         , placeholder "Comment"
-                        , value event.rsvpComment
+                        , value event.myRsvpComment
                         , style "width" "100%"
                         , onInput (RsvpComment event.eventId)
                         ] []
                 ]
             , Table.td []
-              [ button [onClick <| Signup event.eventId "A" event.rsvpComment] [rsvpHtml "A"]
+              [ button [onClick <| Signup event.eventId "A" event.myRsvpComment] [rsvpHtml "A"]
               , text " "
-              , button [onClick <| Signup event.eventId "N" event.rsvpComment] [rsvpHtml "N"]
+              , button [onClick <| Signup event.eventId "N" event.myRsvpComment] [rsvpHtml "N"]
               , text " "
-              , button [onClick <| Signup event.eventId "1" event.rsvpComment] [rsvpHtml "1"]
+              , button [onClick <| Signup event.eventId "1" event.myRsvpComment] [rsvpHtml "1"]
               ]
             ]
       ]
@@ -172,8 +172,8 @@ setEditing : Int -> Event -> Event
 setEditing eventId event = {event|editingRsvp = event.eventId == eventId}
 
 setComment : Int -> String -> Event -> Event
-setComment eventId comment event = {event|rsvpComment =
-            if event.eventId == eventId then comment else event.rsvpComment}
+setComment eventId comment event = {event|myRsvpComment =
+            if event.eventId == eventId then comment else event.myRsvpComment}
 
 -- SERIALIZATION
 
@@ -191,7 +191,7 @@ eventDecoder =
         |> optional "leagueId" Decode.int 0
         |> optional "myRsvp" Decode.string ""
         |> optional "editingRsvp" (Decode.succeed False) False
-        |> optional "rsvpComment" (Decode.succeed "") ""
+        |> optional "myRsvpComment" Decode.string ""
 
 decoder : Maybe Cred -> Int -> Decoder (List Event)
 decoder maybeCred resultsPerPage =
