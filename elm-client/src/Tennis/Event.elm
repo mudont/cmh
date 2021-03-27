@@ -112,7 +112,7 @@ viewRsvpDetailedEditor event =
             [ Table.td [Table.cellAttr (colspan 3)]
                 [ input [ type_ "text"
                         , placeholder "Comment"
-                        , value event.comment
+                        , value event.rsvpComment
                         , style "width" "100%"
                         , onInput (RsvpComment event.eventId)
                         ] []
@@ -166,7 +166,7 @@ update maybeCred msg (Model model) =
                               , Log.dbg <| "Editing Rsvp Comment for " ++ String.fromInt eventId)
         RsvpComment eventId comment ->
             ( Model {model| events = List.map (setComment eventId comment) model.events}
-            , Cmd.none)
+            , Log.dbg <| "Got RsvpComment " ++ comment)
 
 setEditing : Int -> Event -> Event
 setEditing eventId event = {event|editingRsvp = event.eventId == eventId}

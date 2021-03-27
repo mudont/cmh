@@ -286,7 +286,10 @@ update msg model =
                                 Event.update (Session.cred model.session) subMsg events
                         in
                         ( { model | events = Loaded newEvents }
-                        , Cmd.map GotEventMsg subCmd
+                        , Cmd.batch
+                            [ Cmd.map GotEventMsg subCmd
+                            , Log.dbg "GotEventMsg..."
+                            ]
                         )
 
                     Loading ->
