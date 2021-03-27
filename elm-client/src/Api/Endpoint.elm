@@ -74,14 +74,13 @@ unwrap : Endpoint -> String
 unwrap (Endpoint str) =
     str
 
-prodUrl = "https://cmhackers.com"
-devUrl = "http://localhost:8080"
-severUrl = devUrl
+
+serverUrl = ""
 url : List String -> List QueryParameter -> Endpoint
 url paths queryParams =
     -- NOTE: Url.Builder takes care of percent-encoding special URL characters.
     -- See https://package.elm-lang.org/packages/elm/url/latest/Url#percentEncode
-    Url.Builder.crossOrigin severUrl
+    Url.Builder.crossOrigin serverUrl
         ("api":: paths)
         queryParams
         |> Endpoint
@@ -93,18 +92,18 @@ url paths queryParams =
 
 login : Endpoint
 login =
-    Url.Builder.crossOrigin severUrl ["login"] [] |> Endpoint -- url [ "login" ] []
+    Url.Builder.crossOrigin serverUrl ["login"] [] |> Endpoint -- url [ "login" ] []
 
 googleLogin : Endpoint
-googleLogin = Url.Builder.crossOrigin severUrl ["google"] [] |> Endpoint
+googleLogin = Url.Builder.crossOrigin serverUrl ["google"] [] |> Endpoint
 
 register : Endpoint
 register =
-    Url.Builder.crossOrigin severUrl ["register"] [] |> Endpoint -- url [ "register" ] []
+    Url.Builder.crossOrigin serverUrl ["register"] [] |> Endpoint -- url [ "register" ] []
 
 resetPassword : String -> Endpoint
 resetPassword email =
-    Url.Builder.crossOrigin severUrl ["reset_password"] [string "email"  email] |> Endpoint
+    Url.Builder.crossOrigin serverUrl ["reset_password"] [string "email"  email] |> Endpoint
 
 profile : Username -> Endpoint
 profile username =

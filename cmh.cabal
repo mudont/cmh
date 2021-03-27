@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 01312518f53cc0ed9836ec244d4da058a442e40d228470161c632e12072ce769
+-- hash: 73822052e8dd6993a034aafda73625387524947ec7cf01ba1dffbde83c712555
 
 name:           cmh
 version:        0.1.0.0
@@ -54,6 +54,7 @@ library
       Util.Crypto
       Util.Email
   other-modules:
+      Util.Score
       Paths_cmh
   hs-source-dirs:
       src
@@ -102,6 +103,7 @@ library
     , lens
     , lens-aeson
     , libiserv
+    , megaparsec
     , memory
     , mime-mail
     , mongoDB
@@ -118,6 +120,8 @@ library
     , protolude
     , random
     , raw-strings-qq
+    , regex
+    , regex-tdfa
     , relude
     , resource-pool
     , rio
@@ -207,6 +211,7 @@ executable client
     , lens
     , lens-aeson
     , libiserv
+    , megaparsec
     , memory
     , mime-mail
     , mongoDB
@@ -223,6 +228,8 @@ executable client
     , protolude
     , random
     , raw-strings-qq
+    , regex
+    , regex-tdfa
     , relude
     , resource-pool
     , rio
@@ -311,6 +318,7 @@ executable cmh
     , lens
     , lens-aeson
     , libiserv
+    , megaparsec
     , memory
     , mime-mail
     , mongoDB
@@ -327,6 +335,8 @@ executable cmh
     , protolude
     , random
     , raw-strings-qq
+    , regex
+    , regex-tdfa
     , relude
     , resource-pool
     , rio
@@ -416,6 +426,7 @@ test-suite cmh-test
     , lens
     , lens-aeson
     , libiserv
+    , megaparsec
     , memory
     , mime-mail
     , mongoDB
@@ -432,6 +443,8 @@ test-suite cmh-test
     , protolude
     , random
     , raw-strings-qq
+    , regex
+    , regex-tdfa
     , relude
     , resource-pool
     , rio

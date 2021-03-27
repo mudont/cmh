@@ -68,7 +68,7 @@ viewMatches timeZone (Model { matches, session, errors , clickedMatchId}) =
     let
         matchesHtml =
             Table.table
-                { options = [ Table.striped, Table.hover, Table.small, Table.responsiveMd ]
+                { options = [ Table.striped, Table.hover, Table.small, Table.responsive ]
                 , thead =  Table.thead [] [Table.tr []
                     [ Table.td [] [ text "Id" ]
                     , Table.td [] [ text "Date" ]
