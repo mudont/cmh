@@ -14,6 +14,7 @@ import Json.Encode as Encode
 import Json.Encode.Extra as Encode
 import List exposing (filter, head)
 import Page
+import Regex exposing (Regex)
 import Route exposing (Route)
 import Session exposing (Session)
 import Time
@@ -48,6 +49,7 @@ type alias Internals =
     , matches: List Match
     , clickedMatchId: Maybe Int
     , isLoading: Bool
+    , setScoreRe: Regex
     }
 
 
@@ -59,6 +61,7 @@ init session matches =
         , matches = matches
         , isLoading = False
         , clickedMatchId = Nothing
+        , setScoreRe = Maybe.withDefault Regex.never  (Regex.fromString "(([0-7])-([0-7]))(\\(([0-9]*)\\))?")
         }
 
 -- VIEW
@@ -204,36 +207,41 @@ update maybeCred msg (Model model) =
           case maybeCred of
             Nothing -> (Model model, Log.dbg <| " Unauthorized Match save " ++ String.fromInt matchId )
             Just cred ->
-                ( Model model
-                , let
-                    mmatch = head <| filter (\m -> m.matchId == matchId) model.matches
-                  in Cmd.batch
-                    [ Log.dbg <| "Match save " ++ String.fromInt matchId
-                    , case mmatch of
-                        Nothing -> Log.dbg <| "Tried to save invalid Match id " ++ String.fromInt matchId
-                        Just match -> Cmd.batch
-                          [ Api.put (Endpoint.match (Just matchId)) cred (Http.jsonBody <|
-                              Encode.object [ ("matchId", Encode.int matchId)
-                                    , ("date", Encode.string <| Date.toIsoString match.date)
-                                    , ("league", Encode.string match.league)
-                                    , ("homePlayer1", Encode.string match.homePlayer1)
-                                    , ("homePlayer2", Encode.string match.homePlayer2)
-                                    , ("awayPlayer1", Encode.string match.awayPlayer1)
-                                    , ("awayPlayer2", Encode.string match.awayPlayer2)
-                                    , ("homeWon", (Encode.maybe Encode.bool) match.homeWon)
-                                    , ("score", Encode.string match.score)
-                                    , ("comment", Encode.string match.comment)
-                                    , ("roundNum", Encode.int match.roundNum)
-                                    , ("matchNum", Encode.int match.matchNum)
-                                    ]) (Decode.succeed 0) SaveCompleted
-                          , Log.dbg <| "Saving homeWon= " ++ (case match.homeWon of
-                                                                 Just True -> "T"
-                                                                 Just False -> "F"
-                                                                 _ -> "?"
-                                                             )
-                          ]
-                    ]
-                )
+                if validScore model matchId then
+                    ( Model model
+                    , let
+                        mmatch = head <| filter (\m -> m.matchId == matchId) model.matches
+                      in Cmd.batch
+                        [ Log.dbg <| "Match save " ++ String.fromInt matchId
+                        , case mmatch of
+                            Nothing -> Log.dbg <| "Tried to save invalid Match id " ++ String.fromInt matchId
+                            Just m ->
+                              let match = canonicalizeScore model.setScoreRe m
+                              in Cmd.batch
+                                  [ Api.put (Endpoint.match (Just matchId)) cred (Http.jsonBody <|
+                                      Encode.object [ ("matchId", Encode.int matchId)
+                                            , ("date", Encode.string <| Date.toIsoString match.date)
+                                            , ("league", Encode.string match.league)
+                                            , ("homePlayer1", Encode.string match.homePlayer1)
+                                            , ("homePlayer2", Encode.string match.homePlayer2)
+                                            , ("awayPlayer1", Encode.string match.awayPlayer1)
+                                            , ("awayPlayer2", Encode.string match.awayPlayer2)
+                                            , ("homeWon", (Encode.maybe Encode.bool) match.homeWon)
+                                            , ("score", Encode.string match.score)
+                                            , ("comment", Encode.string match.comment)
+                                            , ("roundNum", Encode.int match.roundNum)
+                                            , ("matchNum", Encode.int match.matchNum)
+                                            ]) (Decode.succeed 0) SaveCompleted
+                                  , Log.dbg <| "Saving Match. Score = " ++ match.score
+                                  ]
+                        ]
+                    )
+                else
+                    ( Model {
+                        model|errors =["Invalid score. A valid score looks like '6-3 2-6 1-0(11)' where the 11 means the tie-breaker score was 13-11"]
+                      }
+                    , Cmd.none
+                    )
         SaveCompleted result ->
             case result of
                 Ok _ -> (Model {model| clickedMatchId = Nothing}, Log.dbg "Match Saved OK")
@@ -241,11 +249,28 @@ update maybeCred msg (Model model) =
                            , Log.dbg <| httpErrorToString err)
 
 
+validScore : Internals -> Int -> Bool
+validScore model matchId =
+    let mmatch = head <| filter (\m -> m.matchId == matchId) model.matches
+    in
+      case mmatch of
+        Nothing -> True
+        Just match ->
+          let sets = Regex.find model.setScoreRe match.score
+          in match.score == "" || List.length sets > 0
+
 setScore : Int -> String -> Match -> Match
 setScore matchId score match =
     if matchId == match.matchId
     then {match|score=score}
     else match
+
+canonicalizeScore : Regex -> Match -> Match
+canonicalizeScore setScoreRe match =
+      { match|score =
+            let sets = Regex.find setScoreRe match.score
+            in String.join " " <| List.map .match sets
+      }
 
 setWinner : Int -> String -> Match -> Match
 setWinner matchId winner match =
