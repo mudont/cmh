@@ -124,7 +124,7 @@ getWinnerAttrs home away homeWon =
     case homeWon of
       Nothing -> ("", "black", "black")
       Just True -> (home, "green", "lightgray")
-      Just False -> (home, "lightgray", "green")
+      Just False -> (away, "lightgray", "green")
 
 viewUpdateMatch : Match -> Table.Row Msg
 viewUpdateMatch match =
@@ -197,7 +197,7 @@ update maybeCred msg (Model model) =
             ( Model
                 { model | matches = List.map (setWinner matchId winner) model.matches
                 }
-            , Cmd.none )
+            , Log.dbg <| "winner: " ++ winner)
         MatchScore matchId score ->
             ( Model
                 { model | matches = List.map (setScore matchId score) model.matches
@@ -257,7 +257,9 @@ validScore model matchId =
         Nothing -> True
         Just match ->
           let sets = Regex.find model.setScoreRe match.score
-          in match.score == "" || List.length sets > 0
+              invalidCharsRe = Maybe.withDefault Regex.never  (Regex.fromString "[^-0-9() ]")
+              hasInvalidChars = Regex.contains invalidCharsRe match.score
+          in match.score == "" || (List.length sets > 0 && not hasInvalidChars)
 
 setScore : Int -> String -> Match -> Match
 setScore matchId score match =
@@ -275,9 +277,9 @@ canonicalizeScore setScoreRe match =
 setWinner : Int -> String -> Match -> Match
 setWinner matchId winner match =
     if matchId == match.matchId
-    then { match|homeWon = case winner of
+    then Debug.log ("setWinner: " ++ winner) { match|homeWon = case winner of
                 "home" -> Just True
-                "away" -> Just False
+                "away" -> Debug.log ("winner=away") Just False
                 _ -> Nothing
          }
     else match

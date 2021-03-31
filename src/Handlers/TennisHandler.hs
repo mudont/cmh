@@ -322,6 +322,8 @@ getMatches _ _ = forbidden " Pelase Login to see Match info"
 
 updateMatch :: SAS.AuthResult UserData -> MatchInfo -> AppM ()
 updateMatch (SAS.Authenticated user) match = do
+  liftIO $ print "homeWon --------- "
+  liftIO $ print (homeWon match)
   conn <- asks dbConn
   -- invalid "Bad score"
   eid <- liftIO $ runSeldaT (Query.updateMatch $ matchToDb match) conn
