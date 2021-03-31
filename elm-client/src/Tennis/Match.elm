@@ -277,9 +277,9 @@ canonicalizeScore setScoreRe match =
 setWinner : Int -> String -> Match -> Match
 setWinner matchId winner match =
     if matchId == match.matchId
-    then Debug.log ("setWinner: " ++ winner) { match|homeWon = case winner of
+    then { match|homeWon = case winner of
                 "home" -> Just True
-                "away" -> Debug.log ("winner=away") Just False
+                "away" -> Just False
                 _ -> Nothing
          }
     else match
