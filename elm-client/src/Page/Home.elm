@@ -52,18 +52,20 @@ type Status a
 
 
 
-init : Session -> ( Model, Cmd Msg )
-init session =
+init : Session -> Maybe Model -> ( Model, Cmd Msg )
+init session cachedModel =
 
-    ( { session = session
-      , timeZone = Time.utc
-      , status = ""
-      , tab = InfoTab
-      , players = Loading
-      , events = Loading
-      , matches = Loading
-      , info = Loading
-      }
+    ( case cachedModel of
+        Nothing -> { session = session
+                   , timeZone = Time.utc
+                   , status = ""
+                   , tab = InfoTab
+                   , players = Loading
+                   , events = Loading
+                   , matches = Loading
+                   , info = Loading
+                   }
+        Just m -> {m | session = session}
     , Cmd.batch
         [ fetchPlayers session PlayerTab CompletedPlayerLoad
         , fetchEvents session EventTab CompletedEventLoad

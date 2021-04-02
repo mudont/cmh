@@ -80,8 +80,6 @@ viewMatches timeZone (Model { matches, session, errors , clickedMatchId}) =
                     , Table.td [] [ text "Winner" ]
                     , Table.td [] [ text "Score" ]
                     , Table.td [] [ text "Comment" ]
-                    , Table.td [] [ text "Round" ]
-                    , Table.td [] [ text "Match#" ]
                     ]]
                 , tbody =
                     Table.tbody [] <| List.map (viewMatch clickedMatchId) matches
@@ -115,8 +113,6 @@ viewPreview match =
         ,  Table.td [] [text winner]
         ,  Table.td [] [text match.score ]
         ,  Table.td [] [text match.comment ]
-        ,  Table.td [] [text <| String.fromInt match.roundNum ]
-        ,  Table.td [] [text <| String.fromInt match.matchNum ]
         ]
 
 getWinnerAttrs : String -> String -> Maybe Bool -> (String, String, String)
@@ -164,8 +160,6 @@ viewUpdateMatch match =
                             , onBlur (SaveMatch match.matchId)
                             ] []]
         ,  Table.td [] [text match.comment ]
-        ,  Table.td [] [text <| String.fromInt match.roundNum ]
-        ,  Table.td [] [text <| String.fromInt match.matchNum ]
         ]
 
 -- UPDATE

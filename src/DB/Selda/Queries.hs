@@ -121,7 +121,7 @@ allPlayers = select player
 allUsersPlayers :: Query s (Row s User :*: Row s Player)
 allUsersPlayers = do
 
-  -- Restrict to users with non blank names
+  -- Restrict to active users
   u <- select user `suchThat` (\u ->
       u ! #is_active .== literal True
     )
