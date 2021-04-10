@@ -338,6 +338,10 @@ getMatches username = do
     a2u :*: a2p <- leftJoin (
         \(u :*: p) -> ifNull (literal $ toId 0) (m ! #away_player2_id) .== p ! #id
       ) allUsersPlayers
+    order (m ! #match_num) ascending
+    order (m ! #round_num) ascending
+    order (m ! #league_id) ascending
+    order (m ! #date) ascending
     return  $ m :*: (l ? #abbrev ) :*: (h1u ? #username) :*: (h2u ? #username) :*: (a1u ? #username) :*: (a2u ? #username)
 
 
