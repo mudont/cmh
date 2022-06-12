@@ -94,7 +94,7 @@ teamsBlockContents =
                 , Table.tr []
                     [ Table.td [] [a [href "https://tennislink.usta.com/Leagues/Main/StatsAndStandings.aspx?t=R-17&search=vaib%20shin#&&s=3%7c%7c0%7c%7c3512709906%7c%7c2022"]
                                      [text "USTA 3.5 18+"]]
-                    , Table.td [] [text "Vaibhav Shinde/Ravi Bhateja"]
+                    , Table.td [] [text "Vaibhav Shinde/Ravi Bhatheja"]
                     ]
                 , Table.tr []
                     [ Table.td [] [a [href "https://tennislink.usta.com/Leagues/Main/StatsAndStandings.aspx?t=R-17&search=vaib%20shin#&&s=3%7c%7c0%7c%7c3512709839%7c%7c2022"]
