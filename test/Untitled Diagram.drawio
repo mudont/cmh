@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-03-18T16:19:03.150Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15" etag="6fgd2A_81y7-I05fIxjh" version="24.0.7" type="github">
+<mxfile host="app.diagrams.net" modified="2024-03-18T16:51:10.795Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15" etag="16N-867jt4sYb2teH5dV" version="24.0.7" type="github">
   <diagram name="Page-1" id="74e2e168-ea6b-b213-b513-2b3c1d86103e">
     <mxGraphModel dx="1004" dy="1404" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
@@ -10,26 +10,58 @@
         <mxCell id="UTYRpSU03SfMlI0BPvVI-4" value="&lt;span style=&quot;caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: auto; text-align: center; text-indent: 0px; text-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(251, 251, 251); text-decoration: none; display: inline !important; float: none;&quot;&gt;Positions(FPS&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="70" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="UTYRpSU03SfMlI0BPvVI-5" value="Energy Realtime data service" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="310" y="110" width="120" height="80" as="geometry" />
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-5" value="Energy Realtime data service" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="300" y="120" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="UTYRpSU03SfMlI0BPvVI-6" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-6" value="subscription" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="180" y="100" as="sourcePoint" />
             <mxPoint x="310" y="130" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UTYRpSU03SfMlI0BPvVI-7" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-7" value="subscription" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="190" y="210" as="sourcePoint" />
             <mxPoint x="310" y="180" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="UTYRpSU03SfMlI0BPvVI-8" value="Position selectable (HDF5)" style="shape=dataStorage;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
-          <mxGeometry x="500" y="110" width="100" height="80" as="geometry" />
+          <mxGeometry x="500" y="120" width="100" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="UTYRpSU03SfMlI0BPvVI-9" value="" style="shape=singleArrow;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="430" y="130" width="60" height="60" as="geometry" />
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-10" value="Browser" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="370" width="140" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-11" value="ENGY Web" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="UTYRpSU03SfMlI0BPvVI-10">
+          <mxGeometry x="10" y="40" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-14" value="DPySrv" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="410" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-16" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="159.5" as="sourcePoint" />
+            <mxPoint x="490" y="159.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-17" value="realtime update" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" connectable="0" vertex="1" parent="UTYRpSU03SfMlI0BPvVI-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-19" value="On request" style="endArrow=classic;html=1;rounded=0;exitX=0.4;exitY=1.038;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="UTYRpSU03SfMlI0BPvVI-8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="220" as="sourcePoint" />
+            <mxPoint x="540" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-21" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="UTYRpSU03SfMlI0BPvVI-14">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="500" as="sourcePoint" />
+            <mxPoint x="310" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UTYRpSU03SfMlI0BPvVI-22" value="Positions without Lag" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" connectable="0" vertex="1" parent="UTYRpSU03SfMlI0BPvVI-21">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
